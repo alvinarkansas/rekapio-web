@@ -23,10 +23,37 @@ const routes = [
   },
   {
     path: "/app",
+    redirect: "/app/home",
     name: "App",
     component: () => import("../layouts/Main.vue"),
     beforeEnter: authenticate,
-    children: [],
+    children: [
+      {
+        path: "home",
+        name: "Home",
+        component: () => import("../views/Home.vue"),
+      },
+      {
+        path: "budget",
+        name: "Budget",
+        component: () => import("../views/Budget.vue"),
+      },
+      {
+        path: "stats",
+        name: "Stats",
+        component: () => import("../views/Stats.vue"),
+      },
+      {
+        path: "profile",
+        name: "Profile",
+        component: () => import("../views/Profile.vue"),
+      },
+    ],
+  },
+  {
+    path: "/:catchAll(.*)",
+    name: "NotFound",
+    component: () => import("../views/NotFound.vue"),
   },
 ];
 

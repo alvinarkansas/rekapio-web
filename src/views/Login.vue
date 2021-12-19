@@ -104,7 +104,7 @@ export default {
       };
       try {
         const { data } = await AUTH_API.post("/signin", payload);
-        this.$router.push("/app");
+        this.$router.replace("/app");
         this.$store.commit("SET_TOKEN", data.access_token);
         this.$store.commit("SET_AUTHENTICATED", true);
       } catch (error) {

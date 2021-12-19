@@ -1,27 +1,18 @@
 <template>
-  <div>Lorem, ipsum.</div>
-  <button @click="logout" class="bg-primary p-4 rounded-lg">Sign Out</button>
-  <div>
-    <router-view />
+  <div class="bg-dark-300 text-neutral-100">
+    <div class="py-4 mb-14">
+      <router-view />
+    </div>
+    <TheNavbar />
   </div>
 </template>
 
 <script>
-import { API } from "../api";
+import TheNavbar from "../components/TheNavbar.vue";
+
 export default {
   name: "Main",
-  methods: {
-    async logout() {
-      try {
-        await API.post("/users/revoke_refresh_token");
-        this.$store.commit("SET_TOKEN", "");
-        this.$store.commit("SET_AUTHENTICATED", false);
-        this.$router.push("/");
-      } catch (error) {
-        console.log(error.response);
-      }
-    },
-  },
+  components: { TheNavbar },
 };
 </script>
 
