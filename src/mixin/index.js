@@ -16,5 +16,8 @@ export default {
     toRupiah(value) {
       return `Rp ${this.groupDigit(value)}`;
     },
+    toInteger(amount) {
+      return amount ? parseInt(amount.replace(/,.*|[^0-9]/g, ""), 10) : 0;
+    },
   },
 };

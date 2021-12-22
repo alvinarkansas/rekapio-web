@@ -5,6 +5,7 @@
     <BaseNavItem to="/app/home" label="Home" icon="home" />
     <BaseNavItem to="/app/budget" label="Budget" icon="thumbtack" />
     <button
+      @click="$store.commit('SET_MODAL', { type: 'recordAdd', payload: true })"
       className="grid place-items-center rounded-full bg-shades-400 w-10 h-10"
     >
       <BaseIcon name="plus" color="white" />

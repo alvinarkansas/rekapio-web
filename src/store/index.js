@@ -8,6 +8,9 @@ export default createStore({
     accounts: [],
     recentRecords: [],
     categories: [],
+    modal: {
+      recordAdd: false,
+    },
   },
   mutations: {
     SET_TOKEN(state, payload) {
@@ -24,6 +27,9 @@ export default createStore({
     },
     SET_CATEGORIES(state, payload) {
       state.categories = payload;
+    },
+    SET_MODAL(state, { type, payload }) {
+      state.modal[type] = payload;
     },
   },
   actions: {

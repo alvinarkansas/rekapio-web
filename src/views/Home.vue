@@ -1,4 +1,11 @@
 <template>
+  <BaseModal v-model="recordAdd">
+    <ModalRecordAdd
+      @close="closeRecordAddModal"
+      @closeAndRefetch="closeAndRefetch"
+    />
+  </BaseModal>
+
   <section class="px-4 mb-8">
     <h2 class="mb-4 font-bold text-lg">Your Accounts</h2>
     <div class="grid grid-cols-2 gap-4">
@@ -45,15 +52,19 @@
 
 <script>
 import mixin from "../mixin";
-import RecordCard from "../components/RecordCard.vue";
 import BaseIcon from "../components/BaseIcon.vue";
+import BaseModal from "../components/BaseModal.vue";
+import ModalRecordAdd from "../components/ModalRecordAdd.vue";
+import RecordCard from "../components/RecordCard.vue";
 
 export default {
   name: "Home",
   mixins: [mixin],
   components: {
-    RecordCard,
     BaseIcon,
+    BaseModal,
+    ModalRecordAdd,
+    RecordCard,
   },
   computed: {
     accounts() {
@@ -61,6 +72,22 @@ export default {
     },
     recentRecords() {
       return this.$store.state.recentRecords;
+    },
+    recordAdd() {
+      return this.$store.state.modal.recordAdd;
+    },
+  },
+  methods: {
+    async closeRecordAddModal() {
+      await this.$store.commit("SET_MODAL", {
+        type: "recordAdd",
+        payload: false,
+      });
+    },
+    async closeAndRefetch() {
+      this.closeRecordAddModal();
+      await this.$store.dispatch("loadAccounts");
+      await this.$store.dispatch("loadRecentRecords");
     },
   },
   async mounted() {
