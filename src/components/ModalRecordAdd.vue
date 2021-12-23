@@ -1,6 +1,6 @@
 <template>
-  <div class="bg-dark-300 text-neutral-100">
-    <header class="bg-dark-100 p-4 relative rounded-t-xl">
+  <div class="bg-dark-300 text-neutral-100 rounded-t-3xl">
+    <header class="bg-dark-100 p-4 relative rounded-t-3xl">
       <button @click="$emit('close')" class="text-error-200 absolute">
         Cancel
       </button>

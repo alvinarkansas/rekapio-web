@@ -6,6 +6,10 @@
     />
   </BaseModal>
 
+  <BaseModal v-model="accountDetail" fixed-inner>
+    <ModalAccountDetail @close="closeAccountDetailModal" />
+  </BaseModal>
+
   <section class="px-4 mb-8">
     <h2 class="mb-4 font-bold text-lg">Your Accounts</h2>
     <div class="grid grid-cols-2 gap-4">
@@ -13,6 +17,7 @@
         v-for="account in accounts"
         :key="account.id"
         class="rounded-lg bg-dark-100 p-3 pb-2"
+        @click="openAccountDetail(account.id)"
       >
         <div class="flex gap-2 items-center">
           <div
@@ -54,6 +59,7 @@
 import mixin from "../mixin";
 import BaseIcon from "../components/BaseIcon.vue";
 import BaseModal from "../components/BaseModal.vue";
+import ModalAccountDetail from "../components/ModalAccountDetail.vue";
 import ModalRecordAdd from "../components/ModalRecordAdd.vue";
 import RecordCard from "../components/RecordCard.vue";
 
@@ -63,6 +69,7 @@ export default {
   components: {
     BaseIcon,
     BaseModal,
+    ModalAccountDetail,
     ModalRecordAdd,
     RecordCard,
   },
@@ -76,11 +83,30 @@ export default {
     recordAdd() {
       return this.$store.state.modal.recordAdd;
     },
+    accountDetail() {
+      return this.$store.state.modal.accountDetail;
+    },
+    accountEdit() {
+      return this.$store.state.modal.accountEdit;
+    },
   },
   methods: {
-    async closeRecordAddModal() {
-      await this.$store.commit("SET_MODAL", {
+    openAccountDetail(id) {
+      this.$store.commit("SET_ACCOUNT_ID", id);
+      this.$store.commit("SET_MODAL", {
+        type: "accountDetail",
+        payload: true,
+      });
+    },
+    closeRecordAddModal() {
+      this.$store.commit("SET_MODAL", {
         type: "recordAdd",
+        payload: false,
+      });
+    },
+    closeAccountDetailModal() {
+      this.$store.commit("SET_MODAL", {
+        type: "accountDetail",
         payload: false,
       });
     },

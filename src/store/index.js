@@ -8,8 +8,11 @@ export default createStore({
     accounts: [],
     recentRecords: [],
     categories: [],
+    accountId: null,
     modal: {
       recordAdd: false,
+      accountDetail: false,
+      accountEdit: false,
     },
   },
   mutations: {
@@ -27,6 +30,9 @@ export default createStore({
     },
     SET_CATEGORIES(state, payload) {
       state.categories = payload;
+    },
+    SET_ACCOUNT_ID(state, payload) {
+      state.accountId = payload;
     },
     SET_MODAL(state, { type, payload }) {
       state.modal[type] = payload;
@@ -65,6 +71,12 @@ export default createStore({
       } catch (error) {
         console.log(error.response);
       }
+    },
+    getCategory({ state }, id) {
+      console.log(id);
+      console.log(state.categories);
+      console.log(state.categories.filter((ctg) => ctg.id === id)[0]);
+      return state.categories.filter((ctg) => ctg.id === id)[0];
     },
   },
   modules: {},

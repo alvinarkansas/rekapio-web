@@ -18,10 +18,11 @@
         transition-colors
         duration-500
         transform
-        bottom-0
-        inset-x-0
       "
-      :class="violated ? 'bg-flame-soft' : 'bg-snow'"
+      :class="[
+        violated ? 'bg-flame-soft' : 'bg-dark-300',
+        fixedInner ? 'inset-0' : 'bottom-0 inset-x-0',
+      ]"
     >
       <slot />
     </div>
@@ -37,6 +38,10 @@ export default {
       default: false,
     },
     permanent: {
+      type: Boolean,
+      default: false,
+    },
+    fixedInner: {
       type: Boolean,
       default: false,
     },
