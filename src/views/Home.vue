@@ -10,6 +10,13 @@
     <ModalAccountDetail @close="closeAccountDetailModal" />
   </BaseModal>
 
+  <BaseModal v-model="accountEdit">
+    <ModalAccountEdit
+      @close="closeAccountEditModal"
+      @closeAndRefetch="closeAccountDetilAndRefetch"
+    />
+  </BaseModal>
+
   <section class="px-4 mb-8">
     <h2 class="mb-4 font-bold text-lg">Your Accounts</h2>
     <div class="grid grid-cols-2 gap-4">
@@ -60,6 +67,7 @@ import mixin from "../mixin";
 import BaseIcon from "../components/BaseIcon.vue";
 import BaseModal from "../components/BaseModal.vue";
 import ModalAccountDetail from "../components/ModalAccountDetail.vue";
+import ModalAccountEdit from "../components/ModalAccountEdit.vue";
 import ModalRecordAdd from "../components/ModalRecordAdd.vue";
 import RecordCard from "../components/RecordCard.vue";
 
@@ -70,12 +78,16 @@ export default {
     BaseIcon,
     BaseModal,
     ModalAccountDetail,
+    ModalAccountEdit,
     ModalRecordAdd,
     RecordCard,
   },
   computed: {
     accounts() {
       return this.$store.state.accounts;
+    },
+    accountId() {
+      return this.$store.state.accountId;
     },
     recentRecords() {
       return this.$store.state.recentRecords;
@@ -93,16 +105,10 @@ export default {
   methods: {
     openAccountDetail(id) {
       this.$store.commit("SET_ACCOUNT_ID", id);
-      this.$store.commit("SET_MODAL", {
-        type: "accountDetail",
-        payload: true,
-      });
+      this.$store.commit("SET_MODAL", { type: "accountDetail", payload: true });
     },
     closeRecordAddModal() {
-      this.$store.commit("SET_MODAL", {
-        type: "recordAdd",
-        payload: false,
-      });
+      this.$store.commit("SET_MODAL", { type: "recordAdd", payload: false });
     },
     closeAccountDetailModal() {
       this.$store.commit("SET_MODAL", {
@@ -110,9 +116,18 @@ export default {
         payload: false,
       });
     },
+    closeAccountEditModal() {
+      this.$store.commit("SET_MODAL", { type: "accountEdit", payload: false });
+    },
     async closeAndRefetch() {
       this.closeRecordAddModal();
       await this.$store.dispatch("loadAccounts");
+      await this.$store.dispatch("loadRecentRecords");
+    },
+    async closeAccountDetilAndRefetch() {
+      this.closeAccountEditModal();
+      await this.$store.dispatch("loadAccounts");
+      await this.$store.dispatch("loadAccount", this.accountId);
       await this.$store.dispatch("loadRecentRecords");
     },
   },

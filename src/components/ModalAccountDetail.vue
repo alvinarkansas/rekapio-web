@@ -12,7 +12,7 @@
 
   <header class="p-4 relative">
     <div
-      :style="{ background: detail?.color }"
+      :style="{ background: account?.color }"
       class="absolute inset-0 h-1/2 rounded-t-xl"
     />
     <div
@@ -29,14 +29,14 @@
     >
       <div class="flex gap-2 items-center">
         <p class="uppercase text-sm font-medium text-neutral-400">
-          {{ detail?.name }}
+          {{ account?.name }}
         </p>
         <button class="-mt-1" @click="openAccountEditModal">
           <BaseIcon name="pencil" :width="12" :height="12" />
         </button>
       </div>
       <p class="font-bold text-[26px]">
-        {{ toRupiah(detail?.currentBalance) }}
+        {{ toRupiah(account?.current_balance) }}
       </p>
       <p class="text-xs text-neutral-400">
         {{ `Last updated ${lastUpdated}` }}
@@ -100,6 +100,7 @@ export default {
   components: { BaseButton, BaseIcon, RecordCard },
   name: "ModalAccountDetail",
   mixins: [mixin],
+  emits: ["close"],
   data() {
     return {
       detail: {
@@ -112,6 +113,9 @@ export default {
     };
   },
   computed: {
+    account() {
+      return this.$store.state.account;
+    },
     accountId() {
       return this.$store.state.accountId;
     },
@@ -159,6 +163,7 @@ export default {
   async mounted() {
     await this.loadDetail();
     await this.loadRecords();
+    await this.$store.dispatch("loadAccount", this.accountId);
     await this.$store.dispatch("loadCategories");
   },
 };

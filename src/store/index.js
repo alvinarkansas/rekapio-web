@@ -9,6 +9,7 @@ export default createStore({
     recentRecords: [],
     categories: [],
     accountId: null,
+    account: null,
     modal: {
       recordAdd: false,
       accountDetail: false,
@@ -33,6 +34,9 @@ export default createStore({
     },
     SET_ACCOUNT_ID(state, payload) {
       state.accountId = payload;
+    },
+    SET_ACCOUNT(state, payload) {
+      state.account = payload;
     },
     SET_MODAL(state, { type, payload }) {
       state.modal[type] = payload;
@@ -72,10 +76,15 @@ export default createStore({
         console.log(error.response);
       }
     },
+    async loadAccount({ commit }, id) {
+      try {
+        const { data } = await API.get(`/accounts/${id}`);
+        commit("SET_ACCOUNT", data);
+      } catch (error) {
+        console.log(error);
+      }
+    },
     getCategory({ state }, id) {
-      console.log(id);
-      console.log(state.categories);
-      console.log(state.categories.filter((ctg) => ctg.id === id)[0]);
       return state.categories.filter((ctg) => ctg.id === id)[0];
     },
   },

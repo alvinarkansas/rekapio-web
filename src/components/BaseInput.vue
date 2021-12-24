@@ -4,6 +4,7 @@
     :class="classes"
     :type="type"
     :placeholder="placeholder"
+    :value="modelValue"
     spellcheck="false"
     v-maska="mask"
     @input="$emit('update:modelValue', $event.target.value)"
