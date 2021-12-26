@@ -1,19 +1,27 @@
 <template>
   <BaseModal v-model="recordAdd">
     <ModalRecordAdd
-      @close="closeRecordAddModal"
+      @close="closeRecordAdd"
       @closeAndRefetch="closeAndRefetch"
     />
   </BaseModal>
 
   <BaseModal v-model="accountDetail" fixed-inner>
-    <ModalAccountDetail @close="closeAccountDetailModal" />
+    <ModalAccountDetail @close="closeAccountDetail" />
+  </BaseModal>
+
+  <BaseModal v-model="accountAdd">
+    <ModalAccountAdd
+      @close="closeAccountAdd"
+      @closeAndRefetch="closeAccountAddAndRefetch"
+    />
   </BaseModal>
 
   <BaseModal v-model="accountEdit">
     <ModalAccountEdit
-      @close="closeAccountEditModal"
-      @closeAndRefetch="closeAccountDetilAndRefetch"
+      @close="closeAccountEdit"
+      @closeAndRefetch="closeAccountDetailAndRefetch"
+      @deleted="onAccountDelete"
     />
   </BaseModal>
 
@@ -28,10 +36,10 @@
       >
         <div class="flex gap-2 items-center">
           <div
-            class="w-5 h-3 rounded-md"
+            class="w-5 h-3 rounded-md flex-shrink-0"
             :style="{ background: account?.color }"
           />
-          <h6 class="text-xs font-medium uppercase text-neutral-300">
+          <h6 class="text-xs font-medium uppercase text-neutral-300 truncate">
             {{ account.name }}
           </h6>
         </div>
@@ -39,6 +47,13 @@
           {{ toRupiah(account.current_balance) }}
         </p>
       </div>
+
+      <BaseButton
+        icon="plus-small"
+        @click="openAccountAdd"
+        class="h-16"
+        label="Add Account"
+      />
     </div>
   </section>
 
@@ -64,8 +79,10 @@
 
 <script>
 import mixin from "../mixin";
+import BaseButton from "../components/BaseButton.vue";
 import BaseIcon from "../components/BaseIcon.vue";
 import BaseModal from "../components/BaseModal.vue";
+import ModalAccountAdd from "../components/ModalAccountAdd.vue";
 import ModalAccountDetail from "../components/ModalAccountDetail.vue";
 import ModalAccountEdit from "../components/ModalAccountEdit.vue";
 import ModalRecordAdd from "../components/ModalRecordAdd.vue";
@@ -75,8 +92,10 @@ export default {
   name: "Home",
   mixins: [mixin],
   components: {
+    BaseButton,
     BaseIcon,
     BaseModal,
+    ModalAccountAdd,
     ModalAccountDetail,
     ModalAccountEdit,
     ModalRecordAdd,
@@ -95,6 +114,9 @@ export default {
     recordAdd() {
       return this.$store.state.modal.recordAdd;
     },
+    accountAdd() {
+      return this.$store.state.modal.accountAdd;
+    },
     accountDetail() {
       return this.$store.state.modal.accountDetail;
     },
@@ -107,28 +129,45 @@ export default {
       this.$store.commit("SET_ACCOUNT_ID", id);
       this.$store.commit("SET_MODAL", { type: "accountDetail", payload: true });
     },
-    closeRecordAddModal() {
+    openAccountAdd() {
+      this.$store.commit("SET_MODAL", { type: "accountAdd", payload: true });
+    },
+    closeAccountAdd() {
+      this.$store.commit("SET_MODAL", { type: "accountAdd", payload: false });
+    },
+    closeRecordAdd() {
       this.$store.commit("SET_MODAL", { type: "recordAdd", payload: false });
     },
-    closeAccountDetailModal() {
+    closeAccountDetail() {
+      console.log("close: Detail");
       this.$store.commit("SET_MODAL", {
         type: "accountDetail",
         payload: false,
       });
     },
-    closeAccountEditModal() {
+    closeAccountEdit() {
+      console.log("close: Edit");
       this.$store.commit("SET_MODAL", { type: "accountEdit", payload: false });
     },
     async closeAndRefetch() {
-      this.closeRecordAddModal();
+      this.closeRecordAdd();
       await this.$store.dispatch("loadAccounts");
       await this.$store.dispatch("loadRecentRecords");
     },
-    async closeAccountDetilAndRefetch() {
-      this.closeAccountEditModal();
+    async closeAccountAddAndRefetch() {
+      this.closeAccountAdd();
+      await this.$store.dispatch("loadAccounts");
+    },
+    async closeAccountDetailAndRefetch() {
+      this.closeAccountEdit();
       await this.$store.dispatch("loadAccounts");
       await this.$store.dispatch("loadAccount", this.accountId);
       await this.$store.dispatch("loadRecentRecords");
+    },
+    async onAccountDelete() {
+      this.closeAccountEdit();
+      this.closeAccountDetail();
+      await this.$store.dispatch("loadAccounts");
     },
   },
   async mounted() {

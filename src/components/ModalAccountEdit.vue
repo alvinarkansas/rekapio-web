@@ -32,7 +32,11 @@
             <span>Name</span>
           </div>
           <div>
-            <BaseInput v-model="form.name" placeholder="Account name" />
+            <BaseInput
+              v-model="form.name"
+              placeholder="Account name"
+              classes="uppercase placeholder:normal-case"
+            />
           </div>
         </div>
 
@@ -125,6 +129,7 @@
             focus:outline-none
             mb-4
           "
+          @click="deleteAccount"
         >
           Delete
         </button>
@@ -161,6 +166,7 @@ import API from "../api";
 
 export default {
   name: "ModalAccountEdit",
+  emits: ["close", "closeAndRefetch", "deleted"],
   components: {
     BaseIcon,
     BaseInput,
@@ -201,6 +207,14 @@ export default {
       try {
         await API.put(`/accounts/${this.accountId}`, payload);
         this.$emit("closeAndRefetch");
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    async deleteAccount() {
+      try {
+        await API.delete(`/accounts/${this.accountId}`);
+        this.$emit("deleted");
       } catch (error) {
         console.log(error);
       }

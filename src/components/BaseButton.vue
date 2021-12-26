@@ -27,9 +27,9 @@
         <BaseIcon name="loading" :class="{ 'animate-spin': loading }" />
       </div>
       <div v-if="label" class="h-full w-full flex items-center">
-        <p v-if="!loading" class="text-body">{{ buttonLabel }}</p>
+        <p v-if="!loading" class="text-xs">{{ buttonLabel }}</p>
         <template v-else>
-          <p v-if="uppercasedLoadingLabel" class="text-body">
+          <p v-if="uppercasedLoadingLabel" class="text-xs">
             {{ uppercasedLoadingLabel }}
           </p>
         </template>

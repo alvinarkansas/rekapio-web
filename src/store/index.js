@@ -12,6 +12,7 @@ export default createStore({
     account: null,
     modal: {
       recordAdd: false,
+      accountAdd: false,
       accountDetail: false,
       accountEdit: false,
     },

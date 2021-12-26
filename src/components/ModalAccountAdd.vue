@@ -32,7 +32,11 @@
             <span>Name</span>
           </div>
           <div>
-            <BaseInput v-model="form.name" placeholder="Account name" />
+            <BaseInput
+              v-model="form.name"
+              placeholder="Account name"
+              classes="uppercase placeholder:normal-case"
+            />
           </div>
         </div>
 
@@ -142,9 +146,11 @@ import BaseInput from "./BaseInput.vue";
 import CurrencyInput from "./CurrencyInput.vue";
 import { ChevronUpIcon, ChevronDownIcon } from "@heroicons/vue/solid";
 import { COLORS } from "../constants";
+import API from "../api";
 
 export default {
   name: "ModalAccountAdd",
+  emits: ["closeAndRefetch", "close"],
   components: {
     BaseIcon,
     BaseInput,
@@ -170,8 +176,14 @@ export default {
     },
   },
   methods: {
-    handleSubmit() {
-      console.log(this.form);
+    async handleSubmit() {
+      const payload = {
+        name: this.form.name,
+        current_balance: this.form.currentBalance,
+        color: this.form.color,
+      };
+      await API.post("/accounts", payload);
+      this.$emit("closeAndRefetch");
     },
   },
 };
