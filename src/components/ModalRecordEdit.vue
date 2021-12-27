@@ -4,7 +4,7 @@
       <button @click="$emit('close')" class="text-error-200 absolute">
         Cancel
       </button>
-      <h1 class="font-bold text-center">Add Record</h1>
+      <h1 class="font-bold text-center">Edit Record</h1>
     </header>
 
     <form
@@ -309,7 +309,7 @@
             focus:ring-offset-primary
           "
         >
-          Add
+          Save
         </button>
       </div>
     </form>
@@ -329,7 +329,7 @@ import API from "../api";
 dayjs.extend(customParseFormat);
 
 export default {
-  name: "ModalRecordAdd",
+  name: "ModalRecordEdit",
   mixins: [mixin],
   components: {
     BaseIcon,
@@ -341,6 +341,7 @@ export default {
   data() {
     return {
       form: {
+        id: 0,
         type: "expense",
         amount: 0,
         account: { name: "", id: 0 },
@@ -355,8 +356,14 @@ export default {
     };
   },
   computed: {
+    record() {
+      return this.$store.state.record;
+    },
     accounts() {
       return this.$store.state.accounts;
+    },
+    accountId() {
+      return this.$store.state.accountId;
     },
     categories() {
       return this.$store.state.categories;
@@ -364,7 +371,7 @@ export default {
   },
   methods: {
     async handleSubmit() {
-      const { type, note, account, category, time, amount } = this.form;
+      const { id, type, note, account, category, time, amount } = this.form;
       const payload = {
         type,
         note,
@@ -373,8 +380,18 @@ export default {
         AccountId: account.id,
         CategoryId: category.id,
       };
-      await API.post("/records", payload);
-      this.$emit("closeAndRefetch");
+      try {
+        await API.put(`/records/${id}`, payload);
+        this.$emit("close");
+        if (this.$store.state.modal.accountDetail) {
+          await this.$store.dispatch("loadAccount", this.accountId);
+          await this.$store.dispatch("loadAccountRecords");
+        }
+        await this.$store.dispatch("loadAccounts");
+        await this.$store.dispatch("loadRecentRecords");
+      } catch (error) {
+        console.log(error);
+      }
     },
     toggleAccordion(field) {
       let expandClone = { ...this.expand };
@@ -386,9 +403,7 @@ export default {
     },
   },
   async mounted() {
-    await this.$store.dispatch("loadCategories");
-    const { name, id, color, icon } = this.categories[0];
-    this.form.category = { name, id, color, icon };
+    this.form = this.record;
   },
 };
 </script>

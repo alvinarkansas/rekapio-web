@@ -1,5 +1,6 @@
 import { createStore } from "vuex";
 import { AUTH_API, API } from "../api";
+import dayjs from "dayjs";
 
 export default createStore({
   state: {
@@ -7,11 +8,14 @@ export default createStore({
     authenticated: false,
     accounts: [],
     recentRecords: [],
+    accountRecords: [],
     categories: [],
     accountId: null,
     account: null,
+    record: null,
     modal: {
       recordAdd: false,
+      recordEdit: false,
       accountAdd: false,
       accountDetail: false,
       accountEdit: false,
@@ -27,6 +31,9 @@ export default createStore({
     SET_ACCOUNTS(state, payload) {
       state.accounts = payload;
     },
+    SET_ACCOUNT_RECORDS(state, payload) {
+      state.accountRecords = payload;
+    },
     SET_RECENT_RECORDS(state, payload) {
       state.recentRecords = payload;
     },
@@ -38,6 +45,9 @@ export default createStore({
     },
     SET_ACCOUNT(state, payload) {
       state.account = payload;
+    },
+    SET_RECORD(state, payload) {
+      state.record = payload;
     },
     SET_MODAL(state, { type, payload }) {
       state.modal[type] = payload;
@@ -69,6 +79,14 @@ export default createStore({
         console.log(error.response);
       }
     },
+    async loadAccountRecords({ state, commit }) {
+      try {
+        const { data } = await API.get(`/records/${state.accountId}`);
+        commit("SET_ACCOUNT_RECORDS", data);
+      } catch (error) {
+        console.log(error.response);
+      }
+    },
     async loadCategories({ commit }) {
       try {
         const { data } = await API.get("/categories");
@@ -84,6 +102,18 @@ export default createStore({
       } catch (error) {
         console.log(error);
       }
+    },
+    setRecordDetail({ commit }, payload) {
+      const mapped = {
+        id: payload.id,
+        type: payload.type,
+        amount: Math.abs(payload.amount),
+        account: { name: payload.Account?.name, id: payload.Account?.id },
+        category: payload.Category,
+        time: dayjs(payload.time).format("DD-MM-YYYY HH:mm"),
+        note: payload.note,
+      };
+      commit("SET_RECORD", mapped);
     },
     getCategory({ state }, id) {
       return state.categories.filter((ctg) => ctg.id === id)[0];

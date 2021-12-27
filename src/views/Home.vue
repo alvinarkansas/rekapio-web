@@ -10,6 +10,12 @@
     <ModalAccountDetail @close="closeAccountDetail" />
   </BaseModal>
 
+  <BaseModal v-model="recordEdit">
+    <ModalRecordEdit
+      @close="closeRecordEdit"
+    />
+  </BaseModal>
+
   <BaseModal v-model="accountAdd">
     <ModalAccountAdd
       @close="closeAccountAdd"
@@ -58,19 +64,21 @@
   </section>
 
   <section class="px-4">
-    <div class="w-full p-4 bg-dark-100 rounded-lg">
-      <h2 class="mb-4 font-bold text-lg">Recent Records</h2>
+    <div class="w-full py-4 bg-dark-100 rounded-lg">
+      <h2 class="mb-4 px-4 font-bold text-lg">Recent Records</h2>
       <template v-if="recentRecords.length">
         <RecordCard
-          v-for="record in recentRecords"
+          v-for="(record, index) in recentRecords"
           :key="record.id"
           :icon-name="record.Category?.icon"
           :icon-color="record.Category?.color"
           :category="record.Category?.name"
+          :account-color="record.Account?.color"
           :amount="record?.amount"
           :time="record?.time"
           :note="record?.note"
-          classes="mb-4"
+          @click="openRecordEdit(record)"
+          :classes="['px-4', { 'mb-4': index !== recentRecords.length - 1 }]"
         />
       </template>
     </div>
@@ -86,6 +94,7 @@ import ModalAccountAdd from "../components/ModalAccountAdd.vue";
 import ModalAccountDetail from "../components/ModalAccountDetail.vue";
 import ModalAccountEdit from "../components/ModalAccountEdit.vue";
 import ModalRecordAdd from "../components/ModalRecordAdd.vue";
+import ModalRecordEdit from "../components/ModalRecordEdit.vue";
 import RecordCard from "../components/RecordCard.vue";
 
 export default {
@@ -99,6 +108,7 @@ export default {
     ModalAccountDetail,
     ModalAccountEdit,
     ModalRecordAdd,
+    ModalRecordEdit,
     RecordCard,
   },
   computed: {
@@ -113,6 +123,9 @@ export default {
     },
     recordAdd() {
       return this.$store.state.modal.recordAdd;
+    },
+    recordEdit() {
+      return this.$store.state.modal.recordEdit;
     },
     accountAdd() {
       return this.$store.state.modal.accountAdd;
@@ -132,21 +145,26 @@ export default {
     openAccountAdd() {
       this.$store.commit("SET_MODAL", { type: "accountAdd", payload: true });
     },
+    openRecordEdit(record) {
+      this.$store.dispatch("setRecordDetail", record);
+      this.$store.commit("SET_MODAL", { type: "recordEdit", payload: true });
+    },
     closeAccountAdd() {
       this.$store.commit("SET_MODAL", { type: "accountAdd", payload: false });
     },
     closeRecordAdd() {
       this.$store.commit("SET_MODAL", { type: "recordAdd", payload: false });
     },
+    closeRecordEdit() {
+      this.$store.commit("SET_MODAL", { type: "recordEdit", payload: false });
+    },
     closeAccountDetail() {
-      console.log("close: Detail");
       this.$store.commit("SET_MODAL", {
         type: "accountDetail",
         payload: false,
       });
     },
     closeAccountEdit() {
-      console.log("close: Edit");
       this.$store.commit("SET_MODAL", { type: "accountEdit", payload: false });
     },
     async closeAndRefetch() {

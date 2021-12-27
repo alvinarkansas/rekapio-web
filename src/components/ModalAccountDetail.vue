@@ -45,12 +45,12 @@
   </header>
 
   <section
-    v-if="records.length"
-    class="overflow-y-auto px-4 pb-4"
+    v-if="accountRecords.length"
+    class="overflow-y-auto pb-4"
     :style="{ 'max-height': 'calc(100% - 147px - 3rem)' }"
   >
-    <div v-for="record in records" :key="record.id" class="mb-8">
-      <div class="flex justify-between items-center mb-5">
+    <div v-for="record in accountRecords" :key="record.id" class="mb-8">
+      <div class="flex justify-between items-center mb-5 px-4">
         <p class="font-semibold">
           {{ formatRecordTime(record.time) }}
         </p>
@@ -68,6 +68,8 @@
           :amount="row.amount"
           :time="row.time"
           :note="row.note"
+          @click="openRecordEdit(row)"
+          classes="px-4"
         />
       </div>
     </div>
@@ -119,39 +121,23 @@ export default {
     accountId() {
       return this.$store.state.accountId;
     },
+    accountRecords() {
+      return this.$store.state.accountRecords;
+    },
     lastUpdated() {
-      return dayjs(this.detail?.updatedAt).fromNow();
+      return dayjs(this.account?.updatedAt).fromNow();
     },
     categories() {
       return this.$store.state.categories;
     },
   },
   methods: {
-    async loadDetail() {
-      try {
-        const { data } = await API.get("/accounts/" + this.accountId);
-        console.log(data);
-        this.detail = {
-          name: data.name,
-          color: data.color,
-          updatedAt: data.updatedAt,
-          currentBalance: data.current_balance,
-        };
-      } catch (error) {
-        console.log(error.response);
-      }
-    },
-    async loadRecords() {
-      try {
-        const { data } = await API.get(`/records/${this.accountId}`);
-        console.log(data);
-        this.records = data;
-      } catch (error) {
-        console.log(error.response);
-      }
-    },
     openAccountEditModal() {
       this.$store.commit("SET_MODAL", { type: "accountEdit", payload: true });
+    },
+    openRecordEdit(record) {
+      this.$store.dispatch("setRecordDetail", record);
+      this.$store.commit("SET_MODAL", { type: "recordEdit", payload: true });
     },
     formatRecordTime(time) {
       return dayjs(time).format("ddd, D MMM");
@@ -161,9 +147,8 @@ export default {
     },
   },
   async mounted() {
-    await this.loadDetail();
-    await this.loadRecords();
     await this.$store.dispatch("loadAccount", this.accountId);
+    await this.$store.dispatch("loadAccountRecords");
     await this.$store.dispatch("loadCategories");
   },
 };
