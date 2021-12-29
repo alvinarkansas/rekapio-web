@@ -67,6 +67,7 @@
           :category="getCategory(row.CategoryId)?.name"
           :account-color="row.Account?.color"
           :account-name="row.Account?.name"
+          :des-account-id="row.DestinationAccount?.id"
           :des-account-name="row.DestinationAccount?.name"
           :des-account-color="row.DestinationAccount?.color"
           :amount="row.amount"
@@ -92,7 +93,6 @@
 </template>
 
 <script>
-import API from "../api";
 import mixin from "../mixin";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";

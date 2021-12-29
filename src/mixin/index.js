@@ -14,7 +14,11 @@ export default {
       return "0";
     },
     toRupiah(value) {
-      return `Rp ${this.groupDigit(value)}`;
+      if (value < 0) {
+        return `-Rp ${this.groupDigit(value)?.slice(1)}`;
+      } else {
+        return `Rp ${this.groupDigit(value)}`;
+      }
     },
     toInteger(amount) {
       return amount ? parseInt(amount.replace(/,.*|[^0-9]/g, ""), 10) : 0;

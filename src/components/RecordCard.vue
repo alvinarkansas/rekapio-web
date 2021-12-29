@@ -44,8 +44,26 @@
     </div>
     <div class="text-right">
       <p
+        v-if="isTransferred && isOnDetailPage"
         class="text-sm mb-1"
-        :class="amount < 0 ? 'text-error-200' : 'text-green-500'"
+        :class="
+          accountId === desAccountId ? 'text-green-500' : 'text-error-200'
+        "
+      >
+        {{
+          accountId === desAccountId ? toRupiah(amount) : toRupiah(amount * -1)
+        }}
+      </p>
+      <p
+        v-else
+        class="text-sm mb-1"
+        :class="
+          isTransferred
+            ? 'text-neutral-100'
+            : amount < 0
+            ? 'text-error-200'
+            : 'text-green-500'
+        "
       >
         {{ toRupiah(amount) }}
       </p>
@@ -70,6 +88,7 @@ export default {
     iconColor: String,
     accountColor: String,
     accountName: String,
+    desAccountId: Number,
     desAccountName: String,
     desAccountColor: String,
     category: String,
@@ -79,6 +98,9 @@ export default {
     classes: [String, Object],
   },
   computed: {
+    accountId() {
+      return this.$store.state.accountId;
+    },
     formattedTime() {
       return dayjs(this.time).format("HH.mm");
     },
@@ -89,6 +111,9 @@ export default {
         this.desAccountName
         ? true
         : false;
+    },
+    isOnDetailPage() {
+      return this.$store.state.modal.accountDetail;
     },
   },
 };
