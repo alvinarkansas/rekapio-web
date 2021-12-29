@@ -11,9 +11,7 @@
   </BaseModal>
 
   <BaseModal v-model="recordEdit">
-    <ModalRecordEdit
-      @close="closeRecordEdit"
-    />
+    <ModalRecordEdit @close="closeRecordEdit" />
   </BaseModal>
 
   <BaseModal v-model="accountAdd">
@@ -73,6 +71,9 @@
           :icon-name="record.Category?.icon"
           :icon-color="record.Category?.color"
           :category="record.Category?.name"
+          :des-account-name="record.DestinationAccount?.name"
+          :des-account-color="record.DestinationAccount?.color"
+          :account-name="record.Account?.name"
           :account-color="record.Account?.color"
           :amount="record?.amount"
           :time="record?.time"

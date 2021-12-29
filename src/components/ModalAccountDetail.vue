@@ -62,9 +62,13 @@
         <RecordCard
           v-for="row in record.rows"
           :key="row.id"
-          :iconName="getCategory(row.CategoryId)?.icon"
-          :iconColor="getCategory(row.CategoryId)?.color"
+          :icon-name="getCategory(row.CategoryId)?.icon"
+          :icon-color="getCategory(row.CategoryId)?.color"
           :category="getCategory(row.CategoryId)?.name"
+          :account-color="row.Account?.color"
+          :account-name="row.Account?.name"
+          :des-account-name="row.DestinationAccount?.name"
+          :des-account-color="row.DestinationAccount?.color"
           :amount="row.amount"
           :time="row.time"
           :note="row.note"
@@ -150,6 +154,7 @@ export default {
     await this.$store.dispatch("loadAccount", this.accountId);
     await this.$store.dispatch("loadAccountRecords");
     await this.$store.dispatch("loadCategories");
+    console.log(this.accountRecords);
   },
 };
 </script>

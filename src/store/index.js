@@ -73,16 +73,46 @@ export default createStore({
     },
     async loadRecentRecords({ commit }) {
       try {
-        const { data } = await API.get("/records", { params: { limit: 5 } });
-        commit("SET_RECENT_RECORDS", data);
+        const { data: records } = await API.get("/records", {
+          params: { limit: 5 },
+        });
+
+        if (records.length) {
+          for (let i = 0; i < records.length; i++) {
+            if (records[i].type === "transfer") {
+              const { data: destinationAccount } = await API.get(
+                `/accounts/${records[i].DestinationAccountId}`
+              );
+
+              records[i].DestinationAccount = destinationAccount;
+            }
+          }
+        }
+
+        commit("SET_RECENT_RECORDS", records);
       } catch (error) {
         console.log(error.response);
       }
     },
     async loadAccountRecords({ state, commit }) {
       try {
-        const { data } = await API.get(`/records/${state.accountId}`);
-        commit("SET_ACCOUNT_RECORDS", data);
+        const { data: records } = await API.get(`/records/${state.accountId}`);
+
+        if (records.length) {
+          for (let i = 0; i < records.length; i++) {
+            for (let j = 0; j < records[i].rows.length; j++) {
+              if (records[i].rows[j].type === "transfer") {
+                const { data: destinationAccount } = await API.get(
+                  `/accounts/${records[i].rows[j].DestinationAccountId}`
+                );
+
+                records[i].rows[j].DestinationAccount = destinationAccount;
+              }
+            }
+          }
+        }
+
+        commit("SET_ACCOUNT_RECORDS", records);
       } catch (error) {
         console.log(error.response);
       }
@@ -109,7 +139,16 @@ export default createStore({
         type: payload.type,
         amount: Math.abs(payload.amount),
         account: { name: payload.Account?.name, id: payload.Account?.id },
-        category: payload.Category,
+        category: {
+          id: payload.Category?.id,
+          name: payload.Category?.name,
+          color: payload.Category?.color,
+          icon: payload.Category?.icon,
+        },
+        destinationAccount: {
+          name: payload.DestinationAccount?.name,
+          id: payload.DestinationAccount?.id,
+        },
         time: dayjs(payload.time).format("DD-MM-YYYY HH:mm"),
         note: payload.note,
       };

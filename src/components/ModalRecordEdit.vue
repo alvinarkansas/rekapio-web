@@ -152,7 +152,7 @@
           </transition>
         </div>
 
-        <div class="mb-[1px]">
+        <div class="mb-[1px]" v-if="form.type !== 'transfer'">
           <div
             class="
               flex
@@ -164,6 +164,7 @@
               z-10
               bg-dark-100
             "
+            style="min-height: 60px"
           >
             <div class="flex gap-2 items-center justify-center">
               <div
@@ -241,7 +242,67 @@
           </transition>
         </div>
 
-        <div>
+        <div class="mb-[1px]" v-else>
+          <div class="flex justify-between px-4 py-2 relative z-10 bg-dark-100">
+            <div class="flex gap-2 items-center justify-center">
+              <div class="p-3">
+                <BaseIcon name="paper-plane" />
+              </div>
+              <span>To Account</span>
+            </div>
+            <div
+              class="flex gap-2 items-center justify-center"
+              @click="toggleAccordion('destinationAccount')"
+            >
+              <span class="uppercase">{{ form.destinationAccount.name }}</span>
+              <ChevronUpIcon v-if="expand.destinationAccount" class="h-5 w-5" />
+              <ChevronDownIcon v-else class="h-5 w-5 text-neutral-300" />
+            </div>
+          </div>
+
+          <transition name="slide-down">
+            <div
+              v-if="expand.destinationAccount"
+              class="
+                flex
+                gap-4
+                overflow-x-auto
+                pt-2
+                pb-4
+                relative
+                z-0
+                bg-dark-100
+                no-scrollbar
+              "
+            >
+              <span
+                v-for="(account, index) in accounts"
+                :key="account.id"
+                class="py-2 px-4 rounded-lg flex-shrink-0 font-medium uppercase"
+                :class="[
+                  index === 0
+                    ? 'ml-4'
+                    : index === accounts.length - 1
+                    ? 'mr-4'
+                    : '',
+                  form.destinationAccount.id === account.id
+                    ? 'bg-shades-400'
+                    : 'bg-white/10',
+                ]"
+                @click="
+                  form.destinationAccount = {
+                    name: account.name,
+                    id: account.id,
+                  }
+                "
+              >
+                {{ account.name }}
+              </span>
+            </div>
+          </transition>
+        </div>
+
+        <div class="mb-[1px]">
           <div
             class="
               flex
@@ -345,6 +406,7 @@ export default {
         type: "expense",
         amount: 0,
         account: { name: "", id: 0 },
+        destinationAccount: { name: "", id: 0 },
         category: { name: "", id: 0, color: "", icon: "" },
         time: "",
         note: "",
@@ -352,6 +414,7 @@ export default {
       expand: {
         account: false,
         category: false,
+        destinationAccount: false,
       },
     };
   },
@@ -371,14 +434,25 @@ export default {
   },
   methods: {
     async handleSubmit() {
-      const { id, type, note, account, category, time, amount } = this.form;
+      const {
+        id,
+        type,
+        note,
+        account,
+        category,
+        time,
+        amount,
+        destinationAccount,
+      } = this.form;
+
       const payload = {
         type,
         note,
         amount: type === "expense" ? amount * -1 : amount,
         time: dayjs(time, "DD-MM-YYYY HH:mm").format(),
         AccountId: account.id,
-        CategoryId: category.id,
+        CategoryId: type !== "transfer" ? category.id : null,
+        DestinationAccountId: destinationAccount.id || null,
       };
       try {
         await API.put(`/records/${id}`, payload);
@@ -404,6 +478,11 @@ export default {
   },
   async mounted() {
     this.form = this.record;
+    if (this.form.type === "transfer") {
+      await this.$store.dispatch("loadCategories");
+      const { name, id, color, icon } = this.categories[0];
+      this.form.category = { name, id, color, icon };
+    }
   },
 };
 </script>

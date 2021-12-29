@@ -11,17 +11,34 @@
           place-items-center
           relative
         "
-        :style="{ background: iconColor }"
+        :style="{ background: isTransferred ? '' : iconColor }"
       >
-        <BaseIcon color="white" :name="iconName" />
+        <BaseIcon color="white" :name="isTransferred ? 'switch' : iconName" />
         <div
-          v-if="accountColor"
-          class="account-dot"
+          v-if="accountColor && !isTransferred"
+          class="account-dot outlined absolute -bottom-1 -right-1"
           :style="{ background: accountColor }"
         />
       </div>
       <div>
-        <p class="text-sm font-medium mb-1">{{ category }}</p>
+        <p class="text-sm font-medium mb-1">
+          {{ isTransferred ? "Transfer" : category }}
+        </p>
+        <div v-if="isTransferred" class="text-xxs mb-1">
+          <div class="flex gap-1 items-center">
+            <div
+              class="account-dot -mt-[2px]"
+              :style="{ background: accountColor }"
+            />
+            <span>{{ accountName }}</span>
+            <span>--></span>
+            <div
+              class="account-dot -mt-[2px]"
+              :style="{ background: desAccountColor }"
+            />
+            <span>{{ desAccountName }}</span>
+          </div>
+        </div>
         <p class="text-neutral-300 text-xxs">{{ note }}</p>
       </div>
     </div>
@@ -52,6 +69,9 @@ export default {
     iconName: String,
     iconColor: String,
     accountColor: String,
+    accountName: String,
+    desAccountName: String,
+    desAccountColor: String,
     category: String,
     note: String,
     amount: Number,
@@ -62,15 +82,26 @@ export default {
     formattedTime() {
       return dayjs(this.time).format("HH.mm");
     },
+    isTransferred() {
+      return this.accountColor &&
+        this.accountName &&
+        this.desAccountColor &&
+        this.desAccountName
+        ? true
+        : false;
+    },
   },
 };
 </script>
 
 <style scoped>
-.account-dot {
+.account-dot.outlined {
   @apply h-4 w-4;
   @apply rounded-full;
-  @apply absolute -bottom-1 -right-1;
   @apply border-4 border-dark-100;
+}
+.account-dot {
+  @apply h-2 w-2;
+  @apply rounded-full;
 }
 </style>
