@@ -13,12 +13,22 @@ export default createStore({
     accountId: null,
     account: null,
     record: null,
+    category: null,
     modal: {
       recordAdd: false,
       recordEdit: false,
       accountAdd: false,
       accountDetail: false,
       accountEdit: false,
+      category: false,
+      categoryEdit: false,
+      icon: false,
+    },
+    categoryEditForm: {
+      id: 0,
+      name: "",
+      icon: "",
+      color: "",
     },
   },
   mutations: {
@@ -49,8 +59,14 @@ export default createStore({
     SET_RECORD(state, payload) {
       state.record = payload;
     },
+    SET_CATEGORY(state, payload) {
+      state.category = payload;
+    },
     SET_MODAL(state, { type, payload }) {
       state.modal[type] = payload;
+    },
+    SET_CATEGORY_EDIT_FORM(state, payload) {
+      state.categoryEditForm = payload;
     },
   },
   actions: {

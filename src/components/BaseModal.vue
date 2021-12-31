@@ -2,7 +2,7 @@
   <transition name="fade" appear>
     <div
       v-if="modelValue"
-      class="w-screen h-screen bg-black bg-opacity-50 fixed inset-0 z-50"
+      class="w-screen h-screen bg-black bg-opacity-75 fixed inset-0 z-50"
       @click="overlayClick"
     />
   </transition>
