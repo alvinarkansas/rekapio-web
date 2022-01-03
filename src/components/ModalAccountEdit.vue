@@ -71,7 +71,7 @@
               @click="expand.color = !expand.color"
             >
               <span
-                class="h-3 w-5 rounded-full"
+                class="h-4 w-7 rounded-full"
                 :style="{ background: form.color }"
               />
               <ChevronUpIcon v-if="expand.color" class="h-5 w-5" />
@@ -117,46 +117,32 @@
       </div>
 
       <div class="px-4">
-        <button
+        <BaseButton
+          label="Delete"
           type="button"
-          class="
-            px-3
-            py-2
-            w-full
-            bg-error-200
-            rounded-md
-            font-medium
-            focus:outline-none
-            mb-4
-          "
+          bg-color="error-200"
+          size="md"
+          class="w-full mb-4"
+          loading-label="Deleting"
+          :loading="loading.delete"
           @click="deleteAccount"
-        >
-          Delete
-        </button>
-        <button
+        />
+        <BaseButton
+          label="Save"
           type="submit"
-          class="
-            px-3
-            py-2
-            bg-shades-300
-            w-full
-            rounded-md
-            font-medium
-            focus:outline-none
-            focus:ring-2
-            focus:ring-warning-300
-            focus:ring-offset-2
-            focus:ring-offset-primary
-          "
-        >
-          Save
-        </button>
+          bg-color="shades-400"
+          size="md"
+          class="w-full"
+          loading-label="Saving changes"
+          :loading="loading.edit"
+        />
       </div>
     </form>
   </div>
 </template>
 
 <script>
+import BaseButton from "./BaseButton.vue";
 import BaseIcon from "./BaseIcon.vue";
 import BaseInput from "./BaseInput.vue";
 import CurrencyInput from "./CurrencyInput.vue";
@@ -168,6 +154,7 @@ export default {
   name: "ModalAccountEdit",
   emits: ["close", "closeAndRefetch", "deleted"],
   components: {
+    BaseButton,
     BaseIcon,
     BaseInput,
     ChevronUpIcon,
@@ -183,6 +170,10 @@ export default {
       },
       expand: {
         color: false,
+      },
+      loading: {
+        delete: false,
+        edit: false,
       },
     };
   },
@@ -205,19 +196,23 @@ export default {
         color: this.form.color,
       };
       try {
+        this.loading.edit = true;
         await API.put(`/accounts/${this.accountId}`, payload);
         this.$emit("closeAndRefetch");
       } catch (error) {
         console.log(error);
       }
+      this.loading.edit = false;
     },
     async deleteAccount() {
       try {
+        this.loading.delete = true;
         await API.delete(`/accounts/${this.accountId}`);
         this.$emit("deleted");
       } catch (error) {
         console.log(error);
       }
+      this.loading.delete = false;
     },
     prefillAccount() {
       const { name, color, current_balance } = this.account;

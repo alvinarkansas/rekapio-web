@@ -129,24 +129,15 @@
       </div>
 
       <div class="px-4">
-        <button
+        <BaseButton
+          label="Save"
           type="submit"
-          class="
-            px-3
-            py-2
-            bg-shades-300
-            w-full
-            rounded-md
-            font-medium
-            focus:outline-none
-            focus:ring-2
-            focus:ring-warning-300
-            focus:ring-offset-2
-            focus:ring-offset-primary
-          "
-        >
-          Save
-        </button>
+          bg-color="shades-400"
+          size="sm"
+          class="w-full"
+          loading-label="Saving changes"
+          :loading="loading"
+        />
       </div>
     </form>
   </div>
@@ -154,6 +145,7 @@
 
 <script>
 import { COLORS } from "../constants";
+import BaseButton from "./BaseButton.vue";
 import BaseIcon from "../components/BaseIcon.vue";
 import BaseInput from "../components/BaseInput.vue";
 import {
@@ -166,6 +158,7 @@ import API from "../api";
 export default {
   name: "ModalCategoryEdit",
   components: {
+    BaseButton,
     BaseIcon,
     BaseInput,
     ChevronUpIcon,
@@ -177,6 +170,7 @@ export default {
       expand: {
         color: false,
       },
+      loading: false,
     };
   },
   computed: {
@@ -198,6 +192,7 @@ export default {
           icon: this.form.icon,
           color: this.form.color,
         };
+        this.loading = true;
         await API.put(`/categories/${this.form.id}`, payload);
         this.$store.commit("SET_MODAL", {
           type: "categoryEdit",
@@ -207,6 +202,7 @@ export default {
       } catch (error) {
         console.log(error);
       }
+      this.loading = false;
     },
     openIconModal() {
       this.$store.commit("SET_MODAL", { type: "icon", payload: true });
