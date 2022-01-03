@@ -12,8 +12,9 @@
 
   <header class="p-4 relative">
     <div
-      :style="{ background: account?.color }"
+      :style="{ background: !loading.account ? account?.color : '#A6AFBC' }"
       class="absolute inset-0 h-1/2 rounded-t-xl"
+      :class="{ 'animate-pulse': loading.account }"
     />
     <div
       class="
@@ -28,68 +29,107 @@
       "
     >
       <div class="flex gap-2 items-center">
-        <p class="uppercase text-sm font-medium text-neutral-400">
-          {{ account?.name }}
-        </p>
-        <button class="-mt-1" @click="openAccountEditModal">
-          <BaseIcon name="pencil" :width="12" :height="12" />
-        </button>
+        <template v-if="!loading.account">
+          <p class="uppercase text-sm font-medium text-neutral-400">
+            {{ account?.name }}
+          </p>
+          <button class="-mt-1" @click="openAccountEditModal">
+            <BaseIcon name="pencil" :width="12" :height="12" />
+          </button>
+        </template>
+
+        <template v-else>
+          <div class="h-5 w-20 rounded-md bg-neutral-300 animate-pulse mb-2" />
+        </template>
       </div>
-      <p class="font-bold text-[26px]">
+
+      <p class="font-bold text-[26px]" v-if="!loading.account">
         {{ toRupiah(account?.current_balance) }}
       </p>
-      <p class="text-xs text-neutral-400">
+      <div
+        v-else
+        class="h-8 w-2/3 rounded-md bg-neutral-300 animate-pulse mb-1"
+      />
+
+      <p class="text-xs text-neutral-400" v-if="!loading.account">
         {{ `Last updated ${lastUpdated}` }}
       </p>
+      <div v-else class="h-3 w-28 rounded bg-neutral-300 animate-pulse" />
     </div>
   </header>
 
-  <section
-    v-if="accountRecords.length"
-    class="overflow-y-auto pb-4"
-    :style="{ 'max-height': 'calc(100% - 147px - 3rem)' }"
-  >
-    <div v-for="record in accountRecords" :key="record.id" class="mb-8">
+  <template v-if="!loading.accountRecords">
+    <section
+      v-if="accountRecords.length"
+      class="overflow-y-auto pb-4"
+      :style="{ 'max-height': 'calc(100% - 147px - 3rem)' }"
+    >
+      <div v-for="record in accountRecords" :key="record.id" class="mb-8">
+        <div class="flex justify-between items-center mb-5 px-4">
+          <p class="font-semibold">
+            {{ formatRecordTime(record.time) }}
+          </p>
+          <p class="rounded-full text-xs font-semibold bg-dark-100 py-1 px-3">
+            {{ toRupiah(record.total) }}
+          </p>
+        </div>
+        <div class="flex flex-col gap-4">
+          <RecordCard
+            v-for="row in record.rows"
+            :key="row.id"
+            :icon-name="getCategory(row.CategoryId)?.icon"
+            :icon-color="getCategory(row.CategoryId)?.color"
+            :category="getCategory(row.CategoryId)?.name"
+            :account-color="row.Account?.color"
+            :account-name="row.Account?.name"
+            :des-account-id="row.DestinationAccount?.id"
+            :des-account-name="row.DestinationAccount?.name"
+            :des-account-color="row.DestinationAccount?.color"
+            :amount="row.amount"
+            :time="row.time"
+            :note="row.note"
+            @click="openRecordEdit(row)"
+            classes="px-4"
+          />
+        </div>
+      </div>
+    </section>
+
+    <section
+      v-else
+      class="px-4 pb-4 flex flex-col items-center justify-center gap-4"
+      :style="{ height: 'calc(100% - 147px - 3rem)' }"
+    >
+      <p class="text-center text-xl font-bold">
+        There are no records for this account
+      </p>
+      <BaseButton label="Back to home" @click="$emit('close')" uppercase />
+    </section>
+  </template>
+
+  <template v-else>
+    <div v-for="i in 2" :key="i" class="mb-8">
       <div class="flex justify-between items-center mb-5 px-4">
-        <p class="font-semibold">
-          {{ formatRecordTime(record.time) }}
-        </p>
-        <p class="rounded-full text-xs font-semibold bg-dark-100 py-1 px-3">
-          {{ toRupiah(record.total) }}
-        </p>
+        <div class="h-4 w-32 bg-neutral-300 rounded-md animate-pulse" />
+        <div class="h-4 w-20 bg-neutral-300 rounded-md animate-pulse" />
       </div>
       <div class="flex flex-col gap-4">
-        <RecordCard
-          v-for="row in record.rows"
-          :key="row.id"
-          :icon-name="getCategory(row.CategoryId)?.icon"
-          :icon-color="getCategory(row.CategoryId)?.color"
-          :category="getCategory(row.CategoryId)?.name"
-          :account-color="row.Account?.color"
-          :account-name="row.Account?.name"
-          :des-account-id="row.DestinationAccount?.id"
-          :des-account-name="row.DestinationAccount?.name"
-          :des-account-color="row.DestinationAccount?.color"
-          :amount="row.amount"
-          :time="row.time"
-          :note="row.note"
-          @click="openRecordEdit(row)"
-          classes="px-4"
-        />
+        <div v-for="j in 3" :key="j" class="flex justify-between mx-4">
+          <div class="flex gap-2">
+            <span class="h-9 w-9 rounded-full bg-neutral-300 animate-pulse" />
+            <div>
+              <div
+                class="h-4 w-28 bg-neutral-300 rounded-md animate-pulse mb-2"
+              />
+              <div class="h-3 w-20 bg-neutral-300 rounded-md animate-pulse" />
+            </div>
+          </div>
+
+          <div class="h-4 w-16 bg-neutral-300 rounded-md animate-pulse mb-2" />
+        </div>
       </div>
     </div>
-  </section>
-
-  <section
-    v-else
-    class="px-4 pb-4 flex flex-col items-center justify-center gap-4"
-    :style="{ height: 'calc(100% - 147px - 3rem)' }"
-  >
-    <p class="text-center text-xl font-bold">
-      There are no records for this account
-    </p>
-    <BaseButton label="Back to home" @click="$emit('close')" uppercase />
-  </section>
+  </template>
 </template>
 
 <script>
@@ -116,6 +156,10 @@ export default {
         currentBalance: 0,
       },
       records: [],
+      loading: {
+        account: false,
+        accountRecords: false,
+      },
     };
   },
   computed: {
@@ -151,10 +195,13 @@ export default {
     },
   },
   async mounted() {
+    this.loading.account = true;
+    this.loading.accountRecords = true;
     await this.$store.dispatch("loadAccount", this.accountId);
+    this.loading.account = false;
     await this.$store.dispatch("loadAccountRecords");
+    this.loading.accountRecords = false;
     await this.$store.dispatch("loadCategories");
-    console.log(this.accountRecords);
   },
 };
 </script>

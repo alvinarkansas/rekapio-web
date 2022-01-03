@@ -32,27 +32,38 @@
   <section class="px-4 mb-8">
     <h2 class="mb-4 font-bold text-lg">Your Accounts</h2>
     <div class="grid grid-cols-2 gap-4">
-      <div
-        v-for="account in accounts"
-        :key="account.id"
-        class="rounded-lg bg-dark-100 p-3 pb-2"
-        @click="openAccountDetail(account.id)"
-      >
-        <div class="flex gap-2 items-center">
-          <div
-            class="w-5 h-3 rounded-md flex-shrink-0"
-            :style="{ background: account?.color }"
-          />
-          <h6 class="text-xs font-medium uppercase text-neutral-300 truncate">
-            {{ account.name }}
-          </h6>
+      <template v-if="!loading.accounts">
+        <div
+          v-for="account in accounts"
+          :key="account.id"
+          class="rounded-lg bg-dark-100 p-3 pb-2"
+          @click="openAccountDetail(account.id)"
+        >
+          <div class="flex gap-2 items-center">
+            <div
+              class="w-5 h-3 rounded-md flex-shrink-0"
+              :style="{ background: account?.color }"
+            />
+            <h6 class="text-xs font-medium uppercase text-neutral-300 truncate">
+              {{ account.name }}
+            </h6>
+          </div>
+          <p class="text-lg font-semibold">
+            {{ toRupiah(account.current_balance) }}
+          </p>
         </div>
-        <p class="text-lg font-semibold">
-          {{ toRupiah(account.current_balance) }}
-        </p>
-      </div>
+      </template>
+
+      <template v-else>
+        <div
+          v-for="i in 3"
+          :key="i"
+          class="rounded-lg h-16 bg-neutral-300 animate-pulse"
+        />
+      </template>
 
       <BaseButton
+        v-if="!loading.accounts"
         icon="plus-small"
         @click="openAccountAdd"
         class="h-16"
@@ -65,37 +76,59 @@
   <section class="px-4">
     <div class="w-full py-4 bg-dark-100 rounded-lg">
       <h2 class="mb-4 px-4 font-bold text-lg">Recent Records</h2>
-      <template v-if="recentRecords.length">
-        <RecordCard
-          v-for="(record, index) in recentRecords"
-          :key="record.id"
-          :icon-name="record.Category?.icon"
-          :icon-color="record.Category?.color"
-          :category="record.Category?.name"
-          :des-account-name="record.DestinationAccount?.name"
-          :des-account-color="record.DestinationAccount?.color"
-          :account-name="record.Account?.name"
-          :account-color="record.Account?.color"
-          :amount="record?.amount"
-          :time="record?.time"
-          :note="record?.note"
-          @click="openRecordEdit(record)"
-          :classes="['px-4', { 'mb-4': index !== recentRecords.length - 1 }]"
-        />
+      <template v-if="!loading.recentRecords">
+        <template v-if="recentRecords.length">
+          <RecordCard
+            v-for="(record, index) in recentRecords"
+            :key="record.id"
+            :icon-name="record.Category?.icon"
+            :icon-color="record.Category?.color"
+            :category="record.Category?.name"
+            :des-account-name="record.DestinationAccount?.name"
+            :des-account-color="record.DestinationAccount?.color"
+            :account-name="record.Account?.name"
+            :account-color="record.Account?.color"
+            :amount="record?.amount"
+            :time="record?.time"
+            :note="record?.note"
+            @click="openRecordEdit(record)"
+            :classes="['px-4', { 'mb-4': index !== recentRecords.length - 1 }]"
+          />
+        </template>
+        <div
+          v-else
+          class="h-80 px-4 flex flex-col gap-3 items-center justify-center"
+        >
+          <p class="text-sm">You have no recent records</p>
+          <BaseButton
+            label="Add new record"
+            uppercase
+            @click="
+              $store.commit('SET_MODAL', { type: 'recordAdd', payload: true })
+            "
+          />
+        </div>
       </template>
-      <div
-        v-else
-        class="h-80 px-4 flex flex-col gap-3 items-center justify-center"
-      >
-        <p class="text-sm">You have no recent records</p>
-        <BaseButton
-          label="Add new record"
-          uppercase
-          @click="
-            $store.commit('SET_MODAL', { type: 'recordAdd', payload: true })
-          "
-        />
-      </div>
+
+      <template v-else>
+        <div class="flex flex-col gap-4">
+          <div v-for="i in 5" :key="i" class="flex justify-between mx-4">
+            <div class="flex gap-2">
+              <span class="h-9 w-9 rounded-full bg-neutral-300 animate-pulse" />
+              <div>
+                <div
+                  class="h-4 w-28 bg-neutral-300 rounded-md animate-pulse mb-2"
+                />
+                <div class="h-3 w-20 bg-neutral-300 rounded-md animate-pulse" />
+              </div>
+            </div>
+
+            <div
+              class="h-4 w-16 bg-neutral-300 rounded-md animate-pulse mb-2"
+            />
+          </div>
+        </div>
+      </template>
     </div>
   </section>
 </template>
@@ -115,6 +148,14 @@ import RecordCard from "../components/RecordCard.vue";
 export default {
   name: "Home",
   mixins: [mixin],
+  data() {
+    return {
+      loading: {
+        accounts: false,
+        recentRecords: false,
+      },
+    };
+  },
   components: {
     BaseButton,
     BaseIcon,
@@ -184,28 +225,44 @@ export default {
     },
     async closeAndRefetch() {
       this.closeRecordAdd();
+      this.loading.accounts = true;
+      this.loading.recentRecords = true;
       await this.$store.dispatch("loadAccounts");
+      this.loading.accounts = false;
       await this.$store.dispatch("loadRecentRecords");
+      this.loading.recentRecords = false;
     },
     async closeAccountAddAndRefetch() {
       this.closeAccountAdd();
+      this.loading.accounts = true;
       await this.$store.dispatch("loadAccounts");
+      this.loading.accounts = false;
     },
     async closeAccountDetailAndRefetch() {
       this.closeAccountEdit();
+      this.loading.accounts = true;
+      this.loading.recentRecords = true;
       await this.$store.dispatch("loadAccounts");
+      this.loading.accounts = false;
       await this.$store.dispatch("loadAccount", this.accountId);
       await this.$store.dispatch("loadRecentRecords");
+      this.loading.recentRecords = false;
     },
     async onAccountDelete() {
       this.closeAccountEdit();
       this.closeAccountDetail();
+      this.loading.accounts = true;
       await this.$store.dispatch("loadAccounts");
+      this.loading.accounts = false;
     },
   },
   async mounted() {
+    this.loading.accounts = true;
+    this.loading.recentRecords = true;
     await this.$store.dispatch("loadAccounts");
+    this.loading.accounts = false;
     await this.$store.dispatch("loadRecentRecords");
+    this.loading.recentRecords = false;
   },
 };
 </script>

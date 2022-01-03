@@ -9,7 +9,7 @@
       font-semibold
       transition-all
       rounded-lg
-      p-4
+      p-3
     "
     :class="`bg-${bgColor} text-${color}`"
   >

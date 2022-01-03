@@ -23,6 +23,7 @@
             relative
             z-10
             bg-dark-100
+            mb-[1px]
           "
         >
           <div class="flex gap-2 items-center justify-center">
@@ -117,30 +118,22 @@
       </div>
 
       <div class="px-4">
-        <button
+        <BaseButton
+          label="Add"
           type="submit"
-          class="
-            px-3
-            py-2
-            bg-shades-300
-            w-full
-            rounded-md
-            font-medium
-            focus:outline-none
-            focus:ring-2
-            focus:ring-warning-300
-            focus:ring-offset-2
-            focus:ring-offset-primary
-          "
-        >
-          Add
-        </button>
+          bg-color="shades-400"
+          size="sm"
+          class="w-full"
+          loading-label="Adding account"
+          :loading="loading"
+        />
       </div>
     </form>
   </div>
 </template>
 
 <script>
+import BaseButton from "./BaseButton.vue";
 import BaseIcon from "./BaseIcon.vue";
 import BaseInput from "./BaseInput.vue";
 import CurrencyInput from "./CurrencyInput.vue";
@@ -152,6 +145,7 @@ export default {
   name: "ModalAccountAdd",
   emits: ["closeAndRefetch", "close"],
   components: {
+    BaseButton,
     BaseIcon,
     BaseInput,
     ChevronUpIcon,
@@ -168,6 +162,7 @@ export default {
       expand: {
         color: false,
       },
+      loading: false,
     };
   },
   computed: {
@@ -182,7 +177,9 @@ export default {
         current_balance: this.form.currentBalance,
         color: this.form.color,
       };
+      this.loading = true;
       await API.post("/accounts", payload);
+      this.loading = false;
       this.$emit("closeAndRefetch");
     },
   },
