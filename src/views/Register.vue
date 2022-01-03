@@ -102,10 +102,15 @@
 <script>
 import { AUTH_API } from "../api";
 import BaseButton from "../components/BaseButton.vue";
+import { useToast } from "vue-toastification";
 
 export default {
   name: "Register",
   components: { BaseButton },
+  setup() {
+    const toast = useToast();
+    return { toast };
+  },
   data() {
     return {
       name: "",
@@ -128,7 +133,13 @@ export default {
         this.$store.commit("SET_TOKEN", data.access_token);
         this.$store.commit("SET_AUTHENTICATED", true);
       } catch (error) {
-        console.log("🦊", error.response);
+        if (error.response?.data?.message.length) {
+          for (let msg of error.response?.data?.message) {
+            this.toast.error(msg);
+          }
+        } else {
+          this.toast.error(error.response.data);
+        }
       }
       this.loading = false;
     },

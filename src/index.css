@@ -4,6 +4,23 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer components {
+  .Vue-Toastification__toast.custom-toast {
+    padding-top: 8px;
+    padding-bottom: 8px;
+    min-height: 56px;
+    @screen sm {
+      min-width: 480px;
+    }
+  }
+
+  .Vue-Toastification__toast-body.custom-body {
+    font-family: Inter, sans-serif;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+  }
+}
 
 @layer utilities {
   /* Chrome, Safari and Opera */

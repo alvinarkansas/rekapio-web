@@ -386,6 +386,7 @@ import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import mixin from "../mixin";
 import API from "../api";
+import { useToast } from "vue-toastification";
 
 dayjs.extend(customParseFormat);
 
@@ -398,6 +399,10 @@ export default {
     ChevronUpIcon,
     ChevronDownIcon,
     CurrencyInput,
+  },
+  setup() {
+    const toast = useToast();
+    return { toast };
   },
   data() {
     return {
@@ -464,7 +469,7 @@ export default {
         await this.$store.dispatch("loadAccounts");
         await this.$store.dispatch("loadRecentRecords");
       } catch (error) {
-        console.log(error);
+        this.toast.error(error.response.data);
       }
     },
     toggleAccordion(field) {

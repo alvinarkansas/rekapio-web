@@ -51,6 +51,7 @@ import ModalCategory from "../components/ModalCategory.vue";
 import ModalCategoryEdit from "../components/ModalCategoryEdit.vue";
 import ModalIcon from "../components/ModalIcon.vue";
 import { ChevronRightIcon } from "@heroicons/vue/solid";
+import { useToast } from "vue-toastification";
 
 export default {
   name: "Profile",
@@ -61,6 +62,10 @@ export default {
     ModalCategoryEdit,
     ModalIcon,
     ChevronRightIcon,
+  },
+  setup() {
+    const toast = useToast();
+    return { toast };
   },
   data() {
     return {
@@ -84,7 +89,7 @@ export default {
         this.$store.commit("SET_AUTHENTICATED", false);
         this.$router.push("/");
       } catch (error) {
-        console.log(error.response);
+        this.toast.error(error.response.data);
       }
       this.loading = false;
     },

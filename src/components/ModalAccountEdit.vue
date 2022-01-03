@@ -149,6 +149,7 @@ import CurrencyInput from "./CurrencyInput.vue";
 import { ChevronUpIcon, ChevronDownIcon } from "@heroicons/vue/solid";
 import { COLORS } from "../constants";
 import API from "../api";
+import { useToast } from "vue-toastification";
 
 export default {
   name: "ModalAccountEdit",
@@ -160,6 +161,10 @@ export default {
     ChevronUpIcon,
     ChevronDownIcon,
     CurrencyInput,
+  },
+  setup() {
+    const toast = useToast();
+    return { toast };
   },
   data() {
     return {
@@ -200,7 +205,7 @@ export default {
         await API.put(`/accounts/${this.accountId}`, payload);
         this.$emit("closeAndRefetch");
       } catch (error) {
-        console.log(error);
+        this.toast.error(error.response.data);
       }
       this.loading.edit = false;
     },
@@ -210,7 +215,7 @@ export default {
         await API.delete(`/accounts/${this.accountId}`);
         this.$emit("deleted");
       } catch (error) {
-        console.log(error);
+        this.toast.error(error.response.data);
       }
       this.loading.delete = false;
     },

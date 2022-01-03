@@ -154,6 +154,7 @@ import {
   ChevronRightIcon,
 } from "@heroicons/vue/solid";
 import API from "../api";
+import { useToast } from "vue-toastification";
 
 export default {
   name: "ModalCategoryEdit",
@@ -164,6 +165,10 @@ export default {
     ChevronUpIcon,
     ChevronDownIcon,
     ChevronRightIcon,
+  },
+  setup() {
+    const toast = useToast();
+    return { toast };
   },
   data() {
     return {
@@ -200,7 +205,7 @@ export default {
         });
         this.$store.dispatch("loadCategories");
       } catch (error) {
-        console.log(error);
+        this.toast.error(error.response.data);
       }
       this.loading = false;
     },
