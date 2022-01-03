@@ -88,7 +88,7 @@
     <p class="text-center text-xl font-bold">
       There are no records for this account
     </p>
-    <BaseButton label="Return" @click="$emit('close')" />
+    <BaseButton label="Back to home" @click="$emit('close')" uppercase />
   </section>
 </template>
 

@@ -2,12 +2,12 @@ import axios from "axios";
 import store from "../store";
 
 export const AUTH_API = axios.create({
-  baseURL: "http://localhost:3000/users",
+  baseURL: "https://still-meadow-95330.herokuapp.com/users",
   withCredentials: true,
 });
 
 export const API = axios.create({
-  baseURL: "http://localhost:3000",
+  baseURL: "https://still-meadow-95330.herokuapp.com",
   withCredentials: true,
 });
 

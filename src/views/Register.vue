@@ -6,11 +6,12 @@
       width="128"
       class="p-4 mx-auto mb-12"
     />
-    <h1 class="text-2xl font-bold px-4 mb-4">Join us now</h1>
-    <form class="px-4">
+    <h1 class="text-2xl font-bold px-4 mb-4">Get started</h1>
+    <form @submit.prevent="register" class="px-4">
       <div class="flex flex-col gap-1 mb-4">
-        <label htmlFor="name" class="text-sm font-medium"> Name </label>
+        <label for="name" class="text-sm font-medium">Name</label>
         <input
+          v-model="name"
           type="name"
           name="name"
           spellcheck="false"
@@ -30,8 +31,9 @@
       </div>
 
       <div class="flex flex-col gap-1 mb-4">
-        <label htmlFor="email" class="text-sm font-medium"> Email </label>
+        <label for="email" class="text-sm font-medium">Email</label>
         <input
+          v-model="email"
           type="email"
           name="email"
           spellcheck="false"
@@ -51,8 +53,9 @@
       </div>
 
       <div class="flex flex-col gap-1 mb-6">
-        <label htmlFor="password" class="text-sm font-medium"> Password </label>
+        <label for="password" class="text-sm font-medium">Password</label>
         <input
+          v-model="password"
           type="password"
           name="password"
           spellcheck="false"
@@ -72,23 +75,15 @@
       </div>
 
       <div class="flex flex-col gap-4 items-end">
-        <button
-          class="
-            px-3
-            py-2
-            bg-warning-300
-            w-full
-            rounded-md
-            font-medium
-            focus:outline-none
-            focus:ring-2
-            focus:ring-warning-300
-            focus:ring-offset-2
-            focus:ring-offset-primary
-          "
-        >
-          Sign up
-        </button>
+        <BaseButton
+          type="submit"
+          label="Sign up"
+          loading-label="Please wait"
+          size="md"
+          bg-color="warning-300"
+          class="w-full py-2"
+          :loading="loading"
+        />
         <p>
           or sign in
           <router-link
@@ -105,8 +100,39 @@
 </template>
 
 <script>
+import { AUTH_API } from "../api";
+import BaseButton from "../components/BaseButton.vue";
+
 export default {
   name: "Register",
+  components: { BaseButton },
+  data() {
+    return {
+      name: "",
+      email: "",
+      password: "",
+      loading: false,
+    };
+  },
+  methods: {
+    async register() {
+      const payload = {
+        name: this.name,
+        email: this.email,
+        password: this.password,
+      };
+      try {
+        this.loading = true;
+        const { data } = await AUTH_API.post("/signup", payload);
+        this.$router.replace("/app");
+        this.$store.commit("SET_TOKEN", data.access_token);
+        this.$store.commit("SET_AUTHENTICATED", true);
+      } catch (error) {
+        console.log("🦊", error.response);
+      }
+      this.loading = false;
+    },
+  },
 };
 </script>
 

@@ -57,6 +57,7 @@
         @click="openAccountAdd"
         class="h-16"
         label="Add Account"
+        uppercase
       />
     </div>
   </section>
@@ -82,6 +83,19 @@
           :classes="['px-4', { 'mb-4': index !== recentRecords.length - 1 }]"
         />
       </template>
+      <div
+        v-else
+        class="h-80 px-4 flex flex-col gap-3 items-center justify-center"
+      >
+        <p class="text-sm">You have no recent records</p>
+        <BaseButton
+          label="Add new record"
+          uppercase
+          @click="
+            $store.commit('SET_MODAL', { type: 'recordAdd', payload: true })
+          "
+        />
+      </div>
     </div>
   </section>
 </template>

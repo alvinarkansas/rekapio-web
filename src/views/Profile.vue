@@ -32,10 +32,12 @@
     <div class="w-full">
       <BaseButton
         bg-color="error-200"
-        label="logout"
-        class="w-full"
-        size="sm"
+        loading-label="Wait a sec"
+        label="Logout"
+        class="w-full py-3"
+        size="md"
         @click="logout"
+        :loading="loading"
       />
     </div>
   </section>
@@ -60,6 +62,11 @@ export default {
     ModalIcon,
     ChevronRightIcon,
   },
+  data() {
+    return {
+      loading: false,
+    }
+  },
   computed: {
     modal() {
       return this.$store.state.modal;
@@ -71,6 +78,7 @@ export default {
   methods: {
     async logout() {
       try {
+        this.loading = true;
         await API.post("/users/revoke_refresh_token");
         this.$store.commit("SET_TOKEN", "");
         this.$store.commit("SET_AUTHENTICATED", false);
@@ -78,6 +86,7 @@ export default {
       } catch (error) {
         console.log(error.response);
       }
+      this.loading = false;
     },
     openCategoryModal() {
       this.$store.commit("SET_MODAL", { type: "category", payload: true });

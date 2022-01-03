@@ -53,23 +53,15 @@
       </div>
 
       <div class="flex flex-col gap-4 items-end">
-        <button
-          class="
-            px-3
-            py-2
-            bg-warning-300
-            w-full
-            rounded-md
-            font-medium
-            focus:outline-none
-            focus:ring-2
-            focus:ring-warning-300
-            focus:ring-offset-2
-            focus:ring-offset-primary
-          "
-        >
-          Sign in
-        </button>
+        <BaseButton
+          type="submit"
+          label="Sign in"
+          loading-label="Please wait"
+          size="md"
+          bg-color="warning-300"
+          class="w-full py-2"
+          :loading="loading"
+        />
         <p>
           or sign up
           <router-link
@@ -87,13 +79,16 @@
 
 <script>
 import { AUTH_API } from "../api";
+import BaseButton from "../components/BaseButton.vue";
 
 export default {
+  components: { BaseButton },
   name: "Login",
   data() {
     return {
       email: "",
       password: "",
+      loading: false,
     };
   },
   methods: {
@@ -103,6 +98,7 @@ export default {
         password: this.password,
       };
       try {
+        this.loading = true;
         const { data } = await AUTH_API.post("/signin", payload);
         this.$router.replace("/app");
         this.$store.commit("SET_TOKEN", data.access_token);
@@ -110,6 +106,7 @@ export default {
       } catch (error) {
         console.log("🦊", error.response);
       }
+      this.loading = false;
     },
   },
 };

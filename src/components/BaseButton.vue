@@ -29,8 +29,8 @@
       <div v-if="label" class="h-full w-full flex items-center">
         <p v-if="!loading" :class="`text-${size}`">{{ buttonLabel }}</p>
         <template v-else>
-          <p v-if="uppercasedLoadingLabel" :class="`text-${size}`">
-            {{ uppercasedLoadingLabel }}
+          <p v-if="buttonLoadingLabel" :class="`text-${size}`">
+            {{ buttonLoadingLabel }}
           </p>
         </template>
       </div>
@@ -84,16 +84,22 @@ export default {
       type: Boolean,
       default: false,
     },
+    uppercase: {
+      type: Boolean,
+      default: false,
+    },
   },
   components: {
     BaseIcon,
   },
   computed: {
     buttonLabel() {
-      return this.label.toUpperCase();
+      return this.uppercase ? this.label.toUpperCase() : this.label;
     },
-    uppercasedLoadingLabel() {
-      return this.loadingLabel.toUpperCase();
+    buttonLoadingLabel() {
+      return this.uppercase
+        ? this.loadingLabel.toUpperCase()
+        : this.loadingLabel;
     },
   },
 };
