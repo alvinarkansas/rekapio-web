@@ -24,7 +24,7 @@
               px-2
               py-1
             "
-            :class="form.type === 'expense' ? 'bg-shades-400' : ''"
+            :class="form.type === 'expense' ? 'bg-shades-500' : ''"
           >
             <input
               v-model="form.type"
@@ -46,7 +46,7 @@
               px-2
               py-1
             "
-            :class="form.type === 'income' ? 'bg-shades-400' : ''"
+            :class="form.type === 'income' ? 'bg-shades-500' : ''"
           >
             <input
               v-model="form.type"
@@ -68,7 +68,7 @@
               px-2
               py-1
             "
-            :class="form.type === 'transfer' ? 'bg-shades-400' : ''"
+            :class="form.type === 'transfer' ? 'bg-shades-500' : ''"
           >
             <input
               v-model="form.type"
@@ -357,7 +357,6 @@
         <BaseButton
           label="Add"
           type="submit"
-          bg-color="shades-400"
           size="sm"
           class="w-full"
           loading-label="Adding record"

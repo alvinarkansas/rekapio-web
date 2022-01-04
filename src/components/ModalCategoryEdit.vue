@@ -132,7 +132,6 @@
         <BaseButton
           label="Save"
           type="submit"
-          bg-color="shades-400"
           size="sm"
           class="w-full"
           loading-label="Saving changes"

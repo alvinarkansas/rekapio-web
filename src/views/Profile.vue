@@ -31,8 +31,8 @@
 
     <div class="w-full">
       <BaseButton
-        bg-color="error-200"
         loading-label="Wait a sec"
+        flavor="danger"
         label="Logout"
         class="w-full py-3"
         size="md"

@@ -118,9 +118,9 @@
 
       <div class="px-4">
         <BaseButton
+          flavor="danger"
           label="Delete"
           type="button"
-          bg-color="error-200"
           size="md"
           class="w-full mb-4"
           loading-label="Deleting"
@@ -130,7 +130,6 @@
         <BaseButton
           label="Save"
           type="submit"
-          bg-color="shades-400"
           size="md"
           class="w-full"
           loading-label="Saving changes"

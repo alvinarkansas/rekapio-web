@@ -55,11 +55,11 @@
       <div class="flex flex-col gap-4 items-end">
         <BaseButton
           type="submit"
+          flavor="warning"
           label="Sign in"
           loading-label="Please wait"
           size="md"
-          bg-color="warning-300"
-          class="w-full py-2"
+          class="w-full py-2 bg-warning-300"
           :loading="loading"
         />
         <p>

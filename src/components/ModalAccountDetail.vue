@@ -4,7 +4,7 @@
       icon-only
       icon="cross"
       color="white"
-      bg-color="transparent"
+      flavor="clear"
       class="absolute right-0 top-0"
       @click="$emit('close')"
     />

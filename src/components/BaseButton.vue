@@ -11,7 +11,7 @@
       rounded-lg
       p-3
     "
-    :class="`bg-${bgColor} text-${color}`"
+    :class="buttonFlavor"
   >
     <div class="grid grid-flow-col auto-cols-max gap-2">
       <div v-if="icon" class="h-full w-full flex items-center justify-center">
@@ -44,13 +44,11 @@ import BaseIcon from "./BaseIcon.vue";
 export default {
   name: "BaseButton",
   props: {
-    bgColor: {
-      type: String,
+    flavor: {
+      validator(value) {
+        return ["primary", "warning", "danger"].indexOf(value) !== -1;
+      },
       default: "primary",
-    },
-    color: {
-      type: String,
-      default: "white",
     },
     label: {
       type: String,
@@ -101,9 +99,18 @@ export default {
         ? this.loadingLabel.toUpperCase()
         : this.loadingLabel;
     },
+    buttonFlavor() {
+      if (this.flavor === "warning") {
+        return "bg-warning-300";
+      }
+      if (this.flavor === "danger") {
+        return "bg-error-300";
+      }
+      if (this.flavor === "clear") {
+        return "bg-transparent";
+      }
+      return "bg-shades-500";
+    },
   },
 };
 </script>
-
-<style>
-</style>
