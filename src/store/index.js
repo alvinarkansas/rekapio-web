@@ -30,6 +30,13 @@ export default createStore({
       icon: "",
       color: "",
     },
+    loading: {
+      account: false,
+      accountRecords: false,
+      accounts: false,
+      recentRecords: false,
+      categories: false,
+    },
   },
   mutations: {
     SET_TOKEN(state, payload) {
@@ -65,6 +72,9 @@ export default createStore({
     SET_MODAL(state, { type, payload }) {
       state.modal[type] = payload;
     },
+    SET_LOADING(state, { type, payload }) {
+      state.loading[type] = payload;
+    },
     SET_CATEGORY_EDIT_FORM(state, payload) {
       state.categoryEditForm = payload;
     },
@@ -81,14 +91,17 @@ export default createStore({
     },
     async loadAccounts({ commit }) {
       try {
+        commit("SET_LOADING", { type: "accounts", payload: true });
         const { data } = await API.get("/accounts");
         commit("SET_ACCOUNTS", data);
       } catch (error) {
         console.log(error.response);
       }
+      commit("SET_LOADING", { type: "accounts", payload: false });
     },
     async loadRecentRecords({ commit }) {
       try {
+        commit("SET_LOADING", { type: "recentRecords", payload: true });
         const { data: records } = await API.get("/records", {
           params: { limit: 5 },
         });
@@ -109,9 +122,11 @@ export default createStore({
       } catch (error) {
         console.log(error.response);
       }
+      commit("SET_LOADING", { type: "recentRecords", payload: false });
     },
     async loadAccountRecords({ state, commit }) {
       try {
+        commit("SET_LOADING", { type: "accountRecords", payload: true });
         const { data: records } = await API.get(`/records/${state.accountId}`);
 
         if (records.length) {
@@ -132,22 +147,27 @@ export default createStore({
       } catch (error) {
         console.log(error.response);
       }
+      commit("SET_LOADING", { type: "accountRecords", payload: false });
     },
     async loadCategories({ commit }) {
       try {
+        commit("SET_LOADING", { type: "categories", payload: true });
         const { data } = await API.get("/categories");
         commit("SET_CATEGORIES", data);
       } catch (error) {
         console.log(error.response);
       }
+      commit("SET_LOADING", { type: "categories", payload: false });
     },
     async loadAccount({ commit }, id) {
       try {
+        commit("SET_LOADING", { type: "account", payload: true });
         const { data } = await API.get(`/accounts/${id}`);
         commit("SET_ACCOUNT", data);
       } catch (error) {
         console.log(error);
       }
+      commit("SET_LOADING", { type: "account", payload: false });
     },
     setRecordDetail({ commit }, payload) {
       const mapped = {

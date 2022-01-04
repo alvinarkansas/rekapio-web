@@ -156,10 +156,6 @@ export default {
         currentBalance: 0,
       },
       records: [],
-      loading: {
-        account: false,
-        accountRecords: false,
-      },
     };
   },
   computed: {
@@ -178,6 +174,9 @@ export default {
     categories() {
       return this.$store.state.categories;
     },
+    loading() {
+      return this.$store.state.loading;
+    },
   },
   methods: {
     openAccountEditModal() {
@@ -195,12 +194,10 @@ export default {
     },
   },
   async mounted() {
-    this.loading.account = true;
-    this.loading.accountRecords = true;
+    this.$store.commit("SET_LOADING", { type: "account", payload: true });
+    this.$store.commit("SET_LOADING", { type: "accountRecords", payload: true });
     await this.$store.dispatch("loadAccount", this.accountId);
-    this.loading.account = false;
     await this.$store.dispatch("loadAccountRecords");
-    this.loading.accountRecords = false;
     await this.$store.dispatch("loadCategories");
   },
 };

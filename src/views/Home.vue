@@ -148,14 +148,6 @@ import RecordCard from "../components/RecordCard.vue";
 export default {
   name: "Home",
   mixins: [mixin],
-  data() {
-    return {
-      loading: {
-        accounts: false,
-        recentRecords: false,
-      },
-    };
-  },
   components: {
     BaseButton,
     BaseIcon,
@@ -192,6 +184,9 @@ export default {
     accountEdit() {
       return this.$store.state.modal.accountEdit;
     },
+    loading() {
+      return this.$store.state.loading;
+    }
   },
   methods: {
     openAccountDetail(id) {
@@ -225,44 +220,41 @@ export default {
     },
     async closeAndRefetch() {
       this.closeRecordAdd();
-      this.loading.accounts = true;
-      this.loading.recentRecords = true;
+      this.$store.commit("SET_LOADING", { type: "accounts", payload: true });
+      this.$store.commit("SET_LOADING", { type: "recentRecords", payload: true });
       await this.$store.dispatch("loadAccounts");
-      this.loading.accounts = false;
       await this.$store.dispatch("loadRecentRecords");
-      this.loading.recentRecords = false;
     },
     async closeAccountAddAndRefetch() {
       this.closeAccountAdd();
-      this.loading.accounts = true;
+      this.$store.commit("SET_LOADING", { type: "accounts", payload: true });
       await this.$store.dispatch("loadAccounts");
-      this.loading.accounts = false;
     },
     async closeAccountDetailAndRefetch() {
+      this.$store.commit("SET_LOADING", { type: "account", payload: true });
+      this.$store.commit("SET_LOADING", { type: "accountRecords", payload: true });
+      this.$store.commit("SET_LOADING", { type: "accounts", payload: true });
+      this.$store.commit("SET_LOADING", { type: "recentRecords", payload: true });
+
       this.closeAccountEdit();
-      this.loading.accounts = true;
-      this.loading.recentRecords = true;
+
       await this.$store.dispatch("loadAccounts");
-      this.loading.accounts = false;
+      await this.$store.dispatch("loadAccountRecords");
       await this.$store.dispatch("loadAccount", this.accountId);
       await this.$store.dispatch("loadRecentRecords");
-      this.loading.recentRecords = false;
     },
     async onAccountDelete() {
       this.closeAccountEdit();
       this.closeAccountDetail();
-      this.loading.accounts = true;
+      this.$store.commit("SET_LOADING", { type: "accounts", payload: true });
       await this.$store.dispatch("loadAccounts");
-      this.loading.accounts = false;
     },
   },
   async mounted() {
-    this.loading.accounts = true;
-    this.loading.recentRecords = true;
+    this.$store.commit("SET_LOADING", { type: "accounts", payload: true });
+    this.$store.commit("SET_LOADING", { type: "recentRecords", payload: true });
     await this.$store.dispatch("loadAccounts");
-    this.loading.accounts = false;
     await this.$store.dispatch("loadRecentRecords");
-    this.loading.recentRecords = false;
   },
 };
 </script>

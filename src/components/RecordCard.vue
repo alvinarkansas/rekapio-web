@@ -25,7 +25,7 @@
           {{ isTransferred ? "Transfer" : category }}
         </p>
         <div v-if="isTransferred" class="text-xxs mb-1">
-          <div class="flex gap-1 items-center">
+          <div class="flex gap-1 items-center uppercase">
             <div
               class="account-dot -mt-[2px]"
               :style="{ background: accountColor }"

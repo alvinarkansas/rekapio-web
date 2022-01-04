@@ -22,41 +22,56 @@
       class="overflow-y-auto pt-4"
       :style="{ 'max-height': 'calc(96vh - 56px)' }"
     >
-      <button
-        v-for="category in categories"
-        :key="category.id"
-        @click="openCategoryEdit(category)"
-        class="
-          flex
-          items-center
-          justify-between
-          py-2
-          px-4
-          bg-dark-100
-          border-b border-b-dark-300
-          w-full
-        "
-      >
-        <div class="flex items-center gap-2">
-          <div
-            class="
-              rounded-full
-              bg-shades-400
-              h-9
-              w-9
-              grid
-              place-items-center
-              relative
-            "
-            :style="{ background: category.color }"
-          >
-            <BaseIcon :name="category.icon" />
+      <template v-if="!loading.categories">
+        <button
+          v-for="category in categories"
+          :key="category.id"
+          @click="openCategoryEdit(category)"
+          class="
+            flex
+            items-center
+            justify-between
+            py-2
+            px-4
+            bg-dark-100
+            border-b border-b-dark-300
+            w-full
+          "
+        >
+          <div class="flex items-center gap-2">
+            <div
+              class="rounded-full bg-shades-400 h-9 w-9 grid place-items-center"
+              :style="{ background: category.color }"
+            >
+              <BaseIcon :name="category.icon" />
+            </div>
+            <span class="text-sm">{{ category.name }}</span>
           </div>
-          <span class="text-sm">{{ category.name }}</span>
-        </div>
 
-        <ChevronRightIcon class="h-5 w-5 text-white" />
-      </button>
+          <ChevronRightIcon class="h-5 w-5 text-white" />
+        </button>
+      </template>
+
+      <template v-else>
+        <div
+          v-for="i in 8"
+          :key="i"
+          class="
+            flex
+            items-center
+            py-2
+            px-4
+            bg-dark-100
+            border-b border-b-dark-300
+            w-full
+          "
+        >
+          <div class="flex items-center gap-2 animate-pulse">
+            <span class="h-9 w-9 rounded-full bg-neutral-300" />
+            <div class="h-4 w-20 bg-neutral-300 rounded-md" />
+          </div>
+        </div>
+      </template>
     </section>
   </div>
 </template>
@@ -74,14 +89,17 @@ export default {
     BaseIcon,
     BaseInput,
   },
-  // data() {
-  //   return {
-  //     search: "",
-  //   };
-  // },
+  data() {
+    return {
+      // search: "",
+    };
+  },
   computed: {
     categories() {
       return this.$store.state.categories;
+    },
+    loading() {
+      return this.$store.state.loading;
     },
   },
   methods: {

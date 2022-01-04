@@ -354,30 +354,22 @@
       </div>
 
       <div class="px-4">
-        <button
+        <BaseButton
+          label="Save"
           type="submit"
-          class="
-            px-3
-            py-2
-            bg-shades-300
-            w-full
-            rounded-md
-            font-medium
-            focus:outline-none
-            focus:ring-2
-            focus:ring-warning-300
-            focus:ring-offset-2
-            focus:ring-offset-primary
-          "
-        >
-          Save
-        </button>
+          bg-color="shades-400"
+          size="sm"
+          class="w-full"
+          loading-label="Saving changes"
+          :loading="loading.edit"
+        />
       </div>
     </form>
   </div>
 </template>
 
 <script>
+import BaseButton from "./BaseButton.vue";
 import BaseIcon from "./BaseIcon.vue";
 import BaseInput from "./BaseInput.vue";
 import CurrencyInput from "./CurrencyInput.vue";
@@ -394,6 +386,7 @@ export default {
   name: "ModalRecordEdit",
   mixins: [mixin],
   components: {
+    BaseButton,
     BaseIcon,
     BaseInput,
     ChevronUpIcon,
@@ -421,6 +414,10 @@ export default {
         category: false,
         destinationAccount: false,
       },
+      loading: {
+        edit: false,
+        delete: false,
+      }
     };
   },
   computed: {
@@ -460,17 +457,25 @@ export default {
         DestinationAccountId: destinationAccount.id || null,
       };
       try {
+        this.loading.edit = true;
         await API.put(`/records/${id}`, payload);
         this.$emit("close");
         if (this.$store.state.modal.accountDetail) {
+          this.$store.commit("SET_LOADING", { type: "account", payload: true });
+          this.$store.commit("SET_LOADING", { type: "accountRecords", payload: true });
+
           await this.$store.dispatch("loadAccount", this.accountId);
           await this.$store.dispatch("loadAccountRecords");
         }
+        this.$store.commit("SET_LOADING", { type: "recentRecords", payload: true });
+        this.$store.commit("SET_LOADING", { type: "accounts", payload: true });
+
         await this.$store.dispatch("loadAccounts");
         await this.$store.dispatch("loadRecentRecords");
       } catch (error) {
         this.toast.error(error.response.data);
       }
+      this.loading.edit = false;
     },
     toggleAccordion(field) {
       let expandClone = { ...this.expand };
