@@ -46,7 +46,7 @@ export default {
   props: {
     flavor: {
       validator(value) {
-        return ["primary", "warning", "danger"].indexOf(value) !== -1;
+        return ["primary", "warning", "danger", "clear"].indexOf(value) !== -1;
       },
       default: "primary",
     },
