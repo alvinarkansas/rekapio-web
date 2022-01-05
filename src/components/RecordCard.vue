@@ -15,7 +15,7 @@
       >
         <BaseIcon color="white" :name="isTransferred ? 'switch' : iconName" />
         <div
-          v-if="accountColor && !isTransferred"
+          v-if="accountColor && !isTransferred && !isOnDetailPage"
           class="account-dot outlined absolute -bottom-1 -right-1"
           :style="{ background: accountColor }"
         />
