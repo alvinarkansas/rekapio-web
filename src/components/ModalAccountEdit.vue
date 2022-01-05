@@ -141,6 +141,7 @@
 </template>
 
 <script>
+import mixin from "../mixin";
 import BaseButton from "./BaseButton.vue";
 import BaseIcon from "./BaseIcon.vue";
 import BaseInput from "./BaseInput.vue";
@@ -161,10 +162,7 @@ export default {
     ChevronDownIcon,
     CurrencyInput,
   },
-  setup() {
-    const toast = useToast();
-    return { toast };
-  },
+  mixins: [mixin],
   data() {
     return {
       form: {
@@ -204,7 +202,7 @@ export default {
         await API.put(`/accounts/${this.accountId}`, payload);
         this.$emit("closeAndRefetch");
       } catch (error) {
-        this.toast.error(error.response.data);
+        this.revealError(error);
       }
       this.loading.edit = false;
     },
@@ -214,7 +212,7 @@ export default {
         await API.delete(`/accounts/${this.accountId}`);
         this.$emit("deleted");
       } catch (error) {
-        this.toast.error(error.response.data);
+        this.revealError(error);
       }
       this.loading.delete = false;
     },

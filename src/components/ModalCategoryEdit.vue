@@ -144,6 +144,7 @@
 
 <script>
 import { COLORS } from "../constants";
+import mixin from "../mixin";
 import BaseButton from "./BaseButton.vue";
 import BaseIcon from "../components/BaseIcon.vue";
 import BaseInput from "../components/BaseInput.vue";
@@ -153,7 +154,6 @@ import {
   ChevronRightIcon,
 } from "@heroicons/vue/solid";
 import API from "../api";
-import { useToast } from "vue-toastification";
 
 export default {
   name: "ModalCategoryEdit",
@@ -165,10 +165,7 @@ export default {
     ChevronDownIcon,
     ChevronRightIcon,
   },
-  setup() {
-    const toast = useToast();
-    return { toast };
-  },
+  mixins: [mixin],
   data() {
     return {
       expand: {
@@ -204,7 +201,7 @@ export default {
         });
         this.$store.dispatch("loadCategories");
       } catch (error) {
-        this.toast.error(error.response.data);
+        this.revealError(error);
       }
       this.loading = false;
     },

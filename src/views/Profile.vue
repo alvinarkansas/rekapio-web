@@ -45,13 +45,13 @@
 
 <script>
 import { API } from "../api";
+import mixin from "../mixin";
 import BaseButton from "../components/BaseButton.vue";
 import BaseModal from "../components/BaseModal.vue";
 import ModalCategory from "../components/ModalCategory.vue";
 import ModalCategoryEdit from "../components/ModalCategoryEdit.vue";
 import ModalIcon from "../components/ModalIcon.vue";
 import { ChevronRightIcon } from "@heroicons/vue/solid";
-import { useToast } from "vue-toastification";
 
 export default {
   name: "Profile",
@@ -63,10 +63,7 @@ export default {
     ModalIcon,
     ChevronRightIcon,
   },
-  setup() {
-    const toast = useToast();
-    return { toast };
-  },
+  mixins: [mixin],
   data() {
     return {
       loading: false,
@@ -89,7 +86,7 @@ export default {
         this.$store.commit("SET_AUTHENTICATED", false);
         this.$router.push("/");
       } catch (error) {
-        this.toast.error(error.response.data);
+        this.revealError(error);
       }
       this.loading = false;
     },
