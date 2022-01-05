@@ -14,7 +14,7 @@
 
     <section
       class="overflow-y-auto pt-4"
-      :style="{ 'max-height': 'calc(96vh - 112px)' }"
+      :style="{ 'max-height': 'calc(96vh - 56px)' }"
     >
       <div class="grid grid-cols-5 place-items-center">
         <span
