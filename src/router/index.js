@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import store from "../store";
 
 const authenticate = async (to, from, next) => {
-  await store.dispatch("refreshToken");
+  await store.dispatch("refreshToken"); /* coba pindah di else */
   if (store.state.token && store.state.authenticated) {
     next();
   } else {

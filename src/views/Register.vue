@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-primary text-white min-h-screen">
+  <div class="bg-primary text-white h-screen overflow-hidden">
     <img
       src="../assets/logo.png"
       alt="logo"
@@ -101,16 +101,13 @@
 
 <script>
 import { AUTH_API } from "../api";
+import mixin from "../mixin";
 import BaseButton from "../components/BaseButton.vue";
-import { useToast } from "vue-toastification";
 
 export default {
   name: "Register",
   components: { BaseButton },
-  setup() {
-    const toast = useToast();
-    return { toast };
-  },
+  mixins: [mixin],
   data() {
     return {
       name: "",
@@ -133,13 +130,7 @@ export default {
         this.$store.commit("SET_TOKEN", data.access_token);
         this.$store.commit("SET_AUTHENTICATED", true);
       } catch (error) {
-        if (error.response?.data?.message.length) {
-          for (let msg of error.response?.data?.message) {
-            this.toast.error(msg);
-          }
-        } else {
-          this.toast.error(error.response.data);
-        }
+        this.revealError(error);
       }
       this.loading = false;
     },

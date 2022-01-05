@@ -453,8 +453,7 @@ export default {
       this.expand = { ...expandClone };
     },
   },
-  async mounted() {
-    await this.$store.dispatch("loadCategories");
+  mounted() {
     const { name, id, color, icon } = this.categories[0];
     this.form.category = { name, id, color, icon };
   },

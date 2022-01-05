@@ -79,16 +79,13 @@
 
 <script>
 import { AUTH_API } from "../api";
+import mixin from "../mixin";
 import BaseButton from "../components/BaseButton.vue";
-import { useToast } from "vue-toastification";
 
 export default {
   components: { BaseButton },
   name: "Login",
-  setup() {
-    const toast = useToast();
-    return { toast };
-  },
+  mixins: [mixin],
   data() {
     return {
       email: "",
@@ -109,7 +106,7 @@ export default {
         this.$store.commit("SET_TOKEN", data.access_token);
         this.$store.commit("SET_AUTHENTICATED", true);
       } catch (error) {
-        this.toast.error(error.response.data);
+        this.revealError(error);
       }
       this.loading = false;
     },

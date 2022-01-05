@@ -488,7 +488,7 @@ export default {
   async mounted() {
     this.form = this.record;
     if (this.form.type === "transfer") {
-      await this.$store.dispatch("loadCategories");
+      /* to populate income & expense's category field */
       const { name, id, color, icon } = this.categories[0];
       this.form.category = { name, id, color, icon };
     }

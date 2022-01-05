@@ -1,3 +1,5 @@
+import { useToast } from "vue-toastification";
+
 export default {
   methods: {
     groupDigit(value) {
@@ -22,6 +24,37 @@ export default {
     },
     toInteger(amount) {
       return amount ? parseInt(amount.replace(/,.*|[^0-9]/g, ""), 10) : 0;
+    },
+    revealError(error) {
+      const toast = useToast();
+
+      if (error.response) {
+        /* The request was made and the server responded with a status code that falls out of the range of 2xx */
+        console.log("❌ ERROR.RESPONSE: ", error.response);
+        if (error.response.data?.message?.length) {
+          for (let msg of error.response.data?.message) {
+            toast.error(msg);
+          }
+          return;
+        }
+
+        if (error.response.data) {
+          toast.error(error.response.data);
+          return;
+        }
+      } else if (error.request) {
+        /* The request was made but no response was received */
+        console.log("❌ ERROR.REQUEST: ", error.request);
+        toast.error(
+          "No response from server, try refreshing the page or force close the app"
+        );
+      } else {
+        /* Something happened in setting up the request that triggered an Error */
+        console.log("❌ ERROR.MESSAGE: ", error.message);
+        toast.error(
+          "Something went wrong, try refreshing the page or force close the app"
+        );
+      }
     },
   },
 };

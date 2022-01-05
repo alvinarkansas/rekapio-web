@@ -198,7 +198,6 @@ export default {
     this.$store.commit("SET_LOADING", { type: "accountRecords", payload: true });
     await this.$store.dispatch("loadAccount", this.accountId);
     await this.$store.dispatch("loadAccountRecords");
-    await this.$store.dispatch("loadCategories");
   },
 };
 </script>

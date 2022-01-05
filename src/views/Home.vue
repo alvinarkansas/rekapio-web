@@ -251,10 +251,12 @@ export default {
     },
   },
   async mounted() {
-    this.$store.commit("SET_LOADING", { type: "accounts", payload: true });
-    this.$store.commit("SET_LOADING", { type: "recentRecords", payload: true });
-    await this.$store.dispatch("loadAccounts");
-    await this.$store.dispatch("loadRecentRecords");
+    if (!this.$store.state.accounts.length) {
+      this.$store.commit("SET_LOADING", { type: "accounts", payload: true });
+      this.$store.commit("SET_LOADING", { type: "recentRecords", payload: true });
+      await this.$store.dispatch("loadAccounts");
+      await this.$store.dispatch("loadRecentRecords");
+    }
   },
 };
 </script>

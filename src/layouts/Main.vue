@@ -13,7 +13,8 @@ import TheNavbar from "../components/TheNavbar.vue";
 export default {
   name: "Main",
   components: { TheNavbar },
+  async mounted() {
+    await this.$store.dispatch("loadCategories");
+  },
 };
 </script>
-
-<style></style>
