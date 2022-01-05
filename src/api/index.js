@@ -1,13 +1,15 @@
 import axios from "axios";
 import store from "../store";
 
+const baseURL = "https://still-meadow-95330.herokuapp.com";
+
 export const AUTH_API = axios.create({
-  baseURL: import.meta.env.VITE_URL + "/users",
+  baseURL: baseURL + "/users",
   withCredentials: true,
 });
 
 export const API = axios.create({
-  baseURL: import.meta.env.VITE_URL,
+  baseURL: baseURL,
   withCredentials: true,
 });
 
