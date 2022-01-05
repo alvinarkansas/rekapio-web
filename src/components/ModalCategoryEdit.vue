@@ -32,6 +32,7 @@
             relative
             z-10
             bg-dark-100
+            mb-[1px]
           "
         >
           <div class="flex gap-2 items-center justify-center">
@@ -55,6 +56,7 @@
             relative
             z-10
             bg-dark-100
+            mb-[1px]
           "
           @click="openIconModal"
         >
@@ -70,7 +72,7 @@
           </div>
         </div>
 
-        <div>
+        <div class="mb-[1px]">
           <div class="flex justify-between px-4 py-3 relative z-10 bg-dark-100">
             <div class="flex gap-2 items-center justify-center">
               <div class="h-10 w-10 grid place-items-center rounded-full">
@@ -126,6 +128,32 @@
             </div>
           </transition>
         </div>
+
+        <div
+          class="
+            flex
+            justify-between
+            items-center
+            px-4
+            py-2
+            relative
+            z-10
+            bg-dark-100
+          "
+        >
+          <div class="flex gap-2 items-center justify-center">
+            <div class="h-10 w-10 grid place-items-center rounded-full">
+              <BaseIcon name="eye" />
+            </div>
+            <span>Visibility</span>
+          </div>
+          <div>
+            <BaseToggle
+              v-model="form.visible"
+              @switch="form.visible = $event"
+            />
+          </div>
+        </div>
       </div>
 
       <div class="px-4">
@@ -148,6 +176,7 @@ import mixin from "../mixin";
 import BaseButton from "./BaseButton.vue";
 import BaseIcon from "../components/BaseIcon.vue";
 import BaseInput from "../components/BaseInput.vue";
+import BaseToggle from "../components/BaseToggle.vue";
 import {
   ChevronUpIcon,
   ChevronDownIcon,
@@ -161,6 +190,7 @@ export default {
     BaseButton,
     BaseIcon,
     BaseInput,
+    BaseToggle,
     ChevronUpIcon,
     ChevronDownIcon,
     ChevronRightIcon,
@@ -192,6 +222,7 @@ export default {
           name: this.form.name,
           icon: this.form.icon,
           color: this.form.color,
+          visible: this.form.visible,
         };
         this.loading = true;
         await API.put(`/categories/${this.form.id}`, payload);
@@ -215,6 +246,7 @@ export default {
       name: this.category.name,
       icon: this.category.icon,
       color: this.category.color,
+      visible: this.category.visible,
     });
   },
 };

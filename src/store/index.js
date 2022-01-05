@@ -168,5 +168,10 @@ export default createStore({
       return state.categories.filter((ctg) => ctg.id === id)[0];
     },
   },
+  getters: {
+    visibleCategories(state) {
+      return state.categories.filter((ctg) => ctg.visible);
+    },
+  },
   modules: {},
 });

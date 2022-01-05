@@ -45,10 +45,22 @@
             >
               <BaseIcon :name="category.icon" />
             </div>
-            <span class="text-sm">{{ category.name }}</span>
+            <span
+              class="text-sm"
+              :class="{ 'text-neutral-400': !category.visible }"
+            >
+              {{ category.name }}
+            </span>
           </div>
 
-          <ChevronRightIcon class="h-5 w-5 text-white" />
+          <div class="flex items-center gap-2">
+            <BaseIcon
+              v-if="!category.visible"
+              name="eye-crossed"
+              color="#5C6A80"
+            />
+            <ChevronRightIcon class="h-5 w-5 text-white" />
+          </div>
         </button>
       </template>
 

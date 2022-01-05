@@ -207,7 +207,7 @@
               "
             >
               <div
-                v-for="(category, index) in categories"
+                v-for="(category, index) in visibleCategories"
                 :key="category.id"
                 @click="
                   form.category = {
@@ -229,7 +229,7 @@
                 :class="[
                   index === 0
                     ? 'ml-4'
-                    : index === categories.length - 1
+                    : index === visibleCategories.length - 1
                     ? 'mr-4'
                     : '',
                 ]"
@@ -414,8 +414,8 @@ export default {
     accounts() {
       return this.$store.state.accounts;
     },
-    categories() {
-      return this.$store.state.categories;
+    visibleCategories() {
+      return this.$store.getters.visibleCategories;
     },
   },
   methods: {
@@ -454,7 +454,7 @@ export default {
     },
   },
   mounted() {
-    const { name, id, color, icon } = this.categories[0];
+    const { name, id, color, icon } = this.visibleCategories[0];
     this.form.category = { name, id, color, icon };
   },
 };
