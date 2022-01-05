@@ -149,7 +149,6 @@ import CurrencyInput from "./CurrencyInput.vue";
 import { ChevronUpIcon, ChevronDownIcon } from "@heroicons/vue/solid";
 import { COLORS } from "../constants";
 import API from "../api";
-import { useToast } from "vue-toastification";
 
 export default {
   name: "ModalAccountEdit",
