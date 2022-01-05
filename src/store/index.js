@@ -106,18 +106,6 @@ export default createStore({
           params: { limit: 5 },
         });
 
-        if (records.length) {
-          for (let i = 0; i < records.length; i++) {
-            if (records[i].type === "transfer") {
-              const { data: destinationAccount } = await API.get(
-                `/accounts/${records[i].DestinationAccountId}`
-              );
-
-              records[i].DestinationAccount = destinationAccount;
-            }
-          }
-        }
-
         commit("SET_RECENT_RECORDS", records);
       } catch (error) {
         console.log(error.response);
@@ -128,20 +116,6 @@ export default createStore({
       try {
         commit("SET_LOADING", { type: "accountRecords", payload: true });
         const { data: records } = await API.get(`/records/${state.accountId}`);
-
-        if (records.length) {
-          for (let i = 0; i < records.length; i++) {
-            for (let j = 0; j < records[i].rows.length; j++) {
-              if (records[i].rows[j].type === "transfer") {
-                const { data: destinationAccount } = await API.get(
-                  `/accounts/${records[i].rows[j].DestinationAccountId}`
-                );
-
-                records[i].rows[j].DestinationAccount = destinationAccount;
-              }
-            }
-          }
-        }
 
         commit("SET_ACCOUNT_RECORDS", records);
       } catch (error) {
