@@ -1,4 +1,5 @@
 import { useToast } from "vue-toastification";
+import dayjs from "dayjs";
 
 export default {
   methods: {
@@ -55,6 +56,23 @@ export default {
           "Something went wrong, try refreshing the page or force close the app"
         );
       }
+    },
+    getDates(startDate, stopDate) {
+      Date.prototype.addDays = function (days) {
+        let addedDate = new Date(this.valueOf());
+        addedDate.setDate(addedDate.getDate() + days);
+        return addedDate;
+      };
+
+      let dates = new Array();
+      let currentDate = startDate;
+      while (currentDate <= stopDate) {
+        console.log("current: ", currentDate);
+        console.log("stop: ", stopDate);
+        dates.push(dayjs(currentDate).format("D MMM YYYY"));
+        currentDate = currentDate.addDays(1);
+      }
+      return dates;
     },
   },
 };
