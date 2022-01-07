@@ -360,7 +360,7 @@
               </div>
               <span>Note</span>
             </div>
-            <div>
+            <div @click="collapseAll">
               <BaseInput v-model="form.note" />
             </div>
           </div>
@@ -415,7 +415,7 @@ export default {
         account: { name: "", id: 0 },
         destinationAccount: { name: "", id: 0 },
         category: { name: "", id: 0, color: "", icon: "" },
-        day: dayjs().format("D MMM YYYY"),
+        day: "Today",
         hour: dayjs().format("HH"),
         minute: dayjs().format("mm"),
         note: "",
@@ -437,7 +437,7 @@ export default {
       return this.$store.getters.visibleCategories;
     },
     days() {
-      return this.getDates(new Date("2022-01-01T17:00:00.000Z"), new Date());
+      return this.getDates(new Date("2021-01-01T17:00:00.000Z"), new Date());
     },
     hours() {
       return Array.from({ length: 24 }, (_, index) =>
@@ -457,11 +457,20 @@ export default {
     async handleSubmit() {
       const { type, note, account, category, amount, destinationAccount } = this.form;
 
+      let time = "";
+      if (this.form.day === "Today") {
+        const todayDate = dayjs().format("D MMM YYYY");
+        const todayCompleteDate = `${todayDate}, ${this.form.hour}:${this.form.minute}`;
+        time = dayjs(todayCompleteDate, "D MMM YYYY HH:mm").format();
+      } else {
+        time = dayjs(this.time, "D MMM YYYY HH:mm").format();
+      }
+
       const payload = {
         type,
         note,
         amount: type === "expense" ? amount * -1 : amount,
-        time: dayjs(this.time, "D MMM YYYY HH:mm").format(),
+        time,
         AccountId: account.id,
         CategoryId: type !== "transfer" ? category.id : null,
         DestinationAccountId: destinationAccount.id || null,
@@ -478,6 +487,11 @@ export default {
       }
       expandClone[field] = !this.expand[field];
       this.expand = { ...expandClone };
+    },
+    collapseAll() {
+      for (let key in this.expand) {
+        this.expand[key] = false;
+      }
     },
   },
   mounted() {

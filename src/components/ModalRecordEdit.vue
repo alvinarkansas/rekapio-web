@@ -236,7 +236,7 @@
               "
             >
               <div
-                v-for="(category, index) in categories"
+                v-for="(category, index) in visibleCategories"
                 :key="category.id"
                 @click="
                   form.category = {
@@ -258,7 +258,7 @@
                 :class="[
                   index === 0
                     ? 'ml-4'
-                    : index === categories.length - 1
+                    : index === visibleCategories.length - 1
                     ? 'mr-4'
                     : '',
                 ]"
@@ -375,7 +375,7 @@
               </div>
               <span>Note</span>
             </div>
-            <div>
+            <div @click="collapseAll">
               <BaseInput v-model="form.note" />
             </div>
           </div>
@@ -442,7 +442,6 @@ export default {
         account: { name: "", id: 0 },
         destinationAccount: { name: "", id: 0 },
         category: { name: "", id: 0, color: "", icon: "" },
-        time: "",
         note: "",
       },
       expand: {
@@ -467,8 +466,8 @@ export default {
     accountId() {
       return this.$store.state.accountId;
     },
-    categories() {
-      return this.$store.state.categories;
+    visibleCategories() {
+      return this.$store.getters.visibleCategories;
     },
   },
   methods: {
@@ -555,6 +554,11 @@ export default {
       }
       expandClone[field] = !this.expand[field];
       this.expand = { ...expandClone };
+    },
+    collapseAll() {
+      for (let key in this.expand) {
+        this.expand[key] = false;
+      }
     },
   },
   async mounted() {
