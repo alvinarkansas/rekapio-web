@@ -6,7 +6,9 @@
       </header>
 
       <section class="pt-4 pb-6">
-        <p class="text-center mb-4">Are you sure you want to delete this record?</p>
+        <p class="text-center mb-4">
+          Are you sure you want to delete this record?
+        </p>
         <div class="flex gap-4 px-4">
           <BaseButton
             label="Cancel"
@@ -350,11 +352,25 @@
               </div>
               <span>Time</span>
             </div>
-            <div>
-              <BaseInput v-model="form.time" mask="##-##-#### ##:##" />
+            <div
+              class="flex gap-2 items-center"
+              @click="toggleAccordion('time')"
+            >
+              <span>{{ time }}</span>
+
+              <ChevronUpIcon v-if="expand.time" class="h-5 w-5" />
+              <ChevronDownIcon v-else class="h-5 w-5 text-neutral-300" />
             </div>
           </div>
         </div>
+
+        <transition name="slide-down">
+          <div class="flex text-lg" v-if="expand.time">
+            <VueScrollPicker :options="days" v-model="form.day" />
+            <VueScrollPicker :options="hours" v-model="form.hour" />
+            <VueScrollPicker :options="minutes" v-model="form.minute" />
+          </div>
+        </transition>
 
         <div>
           <div
@@ -417,6 +433,7 @@ import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 import mixin from "../mixin";
 import API from "../api";
+import { VueScrollPicker } from "vue-scroll-picker";
 
 dayjs.extend(customParseFormat);
 
@@ -432,6 +449,7 @@ export default {
     ChevronUpIcon,
     ChevronDownIcon,
     CurrencyInput,
+    VueScrollPicker,
   },
   data() {
     return {
@@ -442,12 +460,16 @@ export default {
         account: { name: "", id: 0 },
         destinationAccount: { name: "", id: 0 },
         category: { name: "", id: 0, color: "", icon: "" },
+        day: "Today",
+        hour: dayjs().format("HH"),
+        minute: dayjs().format("mm"),
         note: "",
       },
       expand: {
         account: false,
         category: false,
         destinationAccount: false,
+        time: false,
       },
       loading: {
         edit: false,
@@ -469,25 +491,42 @@ export default {
     visibleCategories() {
       return this.$store.getters.visibleCategories;
     },
+    days() {
+      return this.getDates(new Date("2021-01-01T17:00:00.000Z"), new Date());
+    },
+    hours() {
+      return Array.from({ length: 24 }, (_, index) =>
+        index.toString().length < 2 ? "0" + index : index.toString()
+      );
+    },
+    minutes() {
+      return Array.from({ length: 60 }, (_, index) =>
+        index.toString().length < 2 ? "0" + index : index.toString()
+      );
+    },
+    time() {
+      return `${this.form.day}, ${this.form.hour}:${this.form.minute}`;
+    },
   },
   methods: {
     async handleSubmit() {
-      const {
-        id,
-        type,
-        note,
-        account,
-        category,
-        time,
-        amount,
-        destinationAccount,
-      } = this.form;
+      const { id, type, note, account, category, amount, destinationAccount } =
+        this.form;
+
+      let time = "";
+      if (this.form.day === "Today") {
+        const todayDate = dayjs().format("D MMM YYYY");
+        const todayCompleteDate = `${todayDate}, ${this.form.hour}:${this.form.minute}`;
+        time = dayjs(todayCompleteDate, "D MMM YYYY HH:mm").format();
+      } else {
+        time = dayjs(this.time, "D MMM YYYY HH:mm").format();
+      }
 
       const payload = {
         type,
         note,
         amount: type === "expense" ? amount * -1 : amount,
-        time: dayjs(time, "DD-MM-YYYY HH:mm").format(),
+        time,
         AccountId: account.id,
         CategoryId: type !== "transfer" ? category.id : null,
         DestinationAccountId: destinationAccount.id || null,
@@ -565,7 +604,7 @@ export default {
     this.form = this.record;
     if (this.form.type === "transfer") {
       /* to populate income & expense's category field */
-      const { name, id, color, icon } = this.categories[0];
+      const { name, id, color, icon } = this.visibleCategories[0];
       this.form.category = { name, id, color, icon };
     }
   },
