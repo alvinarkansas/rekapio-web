@@ -1,4 +1,8 @@
 import { useToast } from "vue-toastification";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+
+dayjs.extend(relativeTime);
 
 export default {
   methods: {
@@ -55,6 +59,25 @@ export default {
           "Something went wrong, try refreshing the page or force close the app"
         );
       }
+    },
+    getDates(startDate, stopDate) {
+      Date.prototype.addDays = function (days) {
+        let addedDate = new Date(this.valueOf());
+        addedDate.setDate(addedDate.getDate() + days);
+        return addedDate;
+      };
+
+      let dates = new Array();
+      let currentDate = startDate;
+      while (currentDate <= stopDate) {
+        if (dayjs(currentDate).diff(dayjs(), "day") !== 0) {
+          dates.push(dayjs(currentDate).format("D MMM YYYY"));
+        } else {
+          dates.push("Today");
+        }
+        currentDate = currentDate.addDays(1);
+      }
+      return dates;
     },
   },
 };

@@ -67,13 +67,12 @@
       >
         {{ toRupiah(amount) }}
       </p>
-      <p class="text-xxs text-neutral-300">{{ formattedTime }}</p>
+      <p class="text-xxs text-neutral-300">{{ time }}</p>
     </div>
   </div>
 </template>
 
 <script>
-import dayjs from "dayjs";
 import mixin from "../mixin";
 import BaseIcon from "./BaseIcon.vue";
 
@@ -100,9 +99,6 @@ export default {
   computed: {
     accountId() {
       return this.$store.state.accountId;
-    },
-    formattedTime() {
-      return dayjs(this.time).format("HH.mm");
     },
     isTransferred() {
       return this.accountColor &&

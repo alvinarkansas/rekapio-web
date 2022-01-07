@@ -22,6 +22,26 @@
   }
 }
 
+.vue-scroll-picker {
+  @apply bg-dark-100;
+}
+
+.vue-scroll-picker-item {
+  color: #B5B5B5 !important;
+}
+
+.vue-scroll-picker-item-selected {
+  color: #FFF !important;
+}
+
+.vue-scroll-picker-layer-top {
+  background: linear-gradient(180deg,rgba(47, 49, 66, 1),rgba(47, 49, 66, 0.1)) !important;
+}
+
+.vue-scroll-picker-layer-bottom {
+  background: linear-gradient(0deg,rgba(47, 49, 66, 1),rgba(47, 49, 66, 0.1)) !important;
+}
+
 @layer utilities {
   /* Chrome, Safari and Opera */
   .no-scrollbar::-webkit-scrollbar {
