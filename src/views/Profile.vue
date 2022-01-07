@@ -84,6 +84,7 @@ export default {
         await API.post("/users/revoke_refresh_token");
         this.$store.commit("SET_TOKEN", "");
         this.$store.commit("SET_AUTHENTICATED", false);
+        this.$store.commit("SET_ACCOUNTS", []);
         this.$router.push("/");
       } catch (error) {
         this.revealError(error);
