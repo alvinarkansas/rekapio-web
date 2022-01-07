@@ -89,7 +89,7 @@
             :account-name="record.Account?.name"
             :account-color="record.Account?.color"
             :amount="record?.amount"
-            :time="record?.time"
+            :time="calendar(record?.time)"
             :note="record?.note"
             @click="openRecordEdit(record)"
             :classes="['px-4', { 'mb-4': index !== recentRecords.length - 1 }]"
@@ -144,6 +144,10 @@ import ModalAccountEdit from "../components/ModalAccountEdit.vue";
 import ModalRecordAdd from "../components/ModalRecordAdd.vue";
 import ModalRecordEdit from "../components/ModalRecordEdit.vue";
 import RecordCard from "../components/RecordCard.vue";
+import dayjs from "dayjs";
+import calendar from "dayjs/plugin/calendar";
+
+dayjs.extend(calendar);
 
 export default {
   name: "Home",
@@ -186,7 +190,7 @@ export default {
     },
     loading() {
       return this.$store.state.loading;
-    }
+    },
   },
   methods: {
     openAccountDetail(id) {
@@ -221,7 +225,10 @@ export default {
     async closeAndRefetch() {
       this.closeRecordAdd();
       this.$store.commit("SET_LOADING", { type: "accounts", payload: true });
-      this.$store.commit("SET_LOADING", { type: "recentRecords", payload: true });
+      this.$store.commit("SET_LOADING", {
+        type: "recentRecords",
+        payload: true,
+      });
       await this.$store.dispatch("loadAccounts");
       await this.$store.dispatch("loadRecentRecords");
     },
@@ -232,9 +239,15 @@ export default {
     },
     async closeAccountDetailAndRefetch() {
       this.$store.commit("SET_LOADING", { type: "account", payload: true });
-      this.$store.commit("SET_LOADING", { type: "accountRecords", payload: true });
+      this.$store.commit("SET_LOADING", {
+        type: "accountRecords",
+        payload: true,
+      });
       this.$store.commit("SET_LOADING", { type: "accounts", payload: true });
-      this.$store.commit("SET_LOADING", { type: "recentRecords", payload: true });
+      this.$store.commit("SET_LOADING", {
+        type: "recentRecords",
+        payload: true,
+      });
 
       this.closeAccountEdit();
 
@@ -249,11 +262,22 @@ export default {
       this.$store.commit("SET_LOADING", { type: "accounts", payload: true });
       await this.$store.dispatch("loadAccounts");
     },
+    calendar(time) {
+      return dayjs(time).calendar(null, {
+        sameDay: "[Today at] HH:mm",
+        lastDay: "[Yesterday at] HH:mm",
+        lastWeek: "[Last] ddd [at] HH:mm",
+        sameElse: "D MMM YYYY [at] HH:mm",
+      });
+    },
   },
   async mounted() {
     if (!this.$store.state.accounts.length) {
       this.$store.commit("SET_LOADING", { type: "accounts", payload: true });
-      this.$store.commit("SET_LOADING", { type: "recentRecords", payload: true });
+      this.$store.commit("SET_LOADING", {
+        type: "recentRecords",
+        payload: true,
+      });
       await this.$store.dispatch("loadAccounts");
       await this.$store.dispatch("loadRecentRecords");
     }

@@ -144,6 +144,13 @@ export default createStore({
       commit("SET_LOADING", { type: "account", payload: false });
     },
     setRecordDetail({ commit }, payload) {
+      let day = "";
+      if (dayjs(payload.time).diff(dayjs(), "day") !== 0) {
+        day = dayjs(payload.time).format("D MMM YYYY");
+      } else {
+        day = "Today";
+      }
+
       const mapped = {
         id: payload.id,
         type: payload.type,
@@ -159,7 +166,9 @@ export default createStore({
           name: payload.DestinationAccount?.name,
           id: payload.DestinationAccount?.id,
         },
-        time: dayjs(payload.time).format("DD-MM-YYYY HH:mm"),
+        day,
+        hour: dayjs(payload.time).format("HH"),
+        minute: dayjs(payload.time).format("mm"),
         note: payload.note,
       };
       commit("SET_RECORD", mapped);

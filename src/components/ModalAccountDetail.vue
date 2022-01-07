@@ -86,7 +86,7 @@
             :des-account-name="row.DestinationAccount?.name"
             :des-account-color="row.DestinationAccount?.color"
             :amount="row.amount"
-            :time="row.time"
+            :time="formatTime(row.time)"
             :note="row.note"
             @click="openRecordEdit(row)"
             classes="px-4"
@@ -192,6 +192,9 @@ export default {
     getCategory(id) {
       return this.categories.filter((ctg) => ctg.id === id)[0];
     },
+    formatTime(time) {
+      return dayjs(time).format('HH:mm');
+    }
   },
   async mounted() {
     this.$store.commit("SET_LOADING", { type: "account", payload: true });
