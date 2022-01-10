@@ -1,6 +1,7 @@
 import axios from "axios";
 import store from "../store";
 
+// const baseURL = "http://localhost:3000";
 const baseURL = "https://still-meadow-95330.herokuapp.com";
 
 export const AUTH_API = axios.create({
