@@ -350,10 +350,6 @@ export default {
         { name: "Custom", start: dayjs().startOf("day"), end: dayjs() },
       ],
       selectedTime: null,
-      filter: {
-        start: dayjs().startOf("month"),
-        end: dayjs(),
-      },
       modal: {
         startDate: false,
         endDate: false,
