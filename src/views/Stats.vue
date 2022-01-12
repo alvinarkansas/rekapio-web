@@ -46,7 +46,19 @@
 
     <section class="px-4 shadow-md">
       <div class="w-full py-4 bg-dark-100 rounded-lg">
-        <h2 class="mb-4 px-4 font-bold text-lg">By Category</h2>
+        <div class="flex justify-between items-center mb-4 px-4">
+          <h2 class="font-bold text-lg">By Category</h2>
+          <p
+            v-if="!loading"
+            class="rounded-full text-xs font-semibold bg-dark-300 py-1 px-3"
+          >
+            {{ toRupiah(totalSpent) }}
+          </p>
+          <div
+            v-else
+            class="h-4 w-24 bg-neutral-300 rounded-md animate-pulse"
+          />
+        </div>
 
         <template v-if="!loading">
           <template v-if="summary.length">
@@ -81,9 +93,12 @@
           </template>
 
           <div v-else class="h-80 px-4 grid place-items-center">
-            <p class="text-sm">
+            <p class="text-sm text-center">
               No record to be summarized for
-              <b>{{ selectedTime?.name.toLowerCase() }}</b>
+              <b v-if="selectedTime?.name !== 'Custom'">{{
+                selectedTime?.name.toLowerCase()
+              }}</b>
+              <template v-else>your selected time range</template>
             </p>
           </div>
         </template>
@@ -105,6 +120,22 @@
         </template>
       </div>
     </section>
+  </div>
+
+  <div
+    v-if="!isValid"
+    class="
+      fixed
+      bottom-32
+      inset-x-4
+      rounded-md
+      py-2
+      px-4
+      text-neutral-100
+      bg-error-300
+    "
+  >
+    <p class="text-sm">Start date should be before end date</p>
   </div>
 
   <section
@@ -152,6 +183,7 @@
           rounded-md
           shadow-md
         "
+        :class="{ 'ring-2 ring-error-300': !isValid }"
       >
         {{ customStartDate }}
       </span>
@@ -171,22 +203,18 @@
           rounded-md
           shadow-md
         "
+        :class="{ 'ring-2 ring-error-300': !isValid }"
       >
         {{ customEndDate }}
       </span>
-      <span
-        class="
-          grid
-          place-items-center
-          p-[10px]
-          rounded-md
-          bg-dark-300
-          text-sm
-          shadow-md
-        "
-      >
-        <BaseIcon name="search" @click="loadSummary" />
-      </span>
+      <BaseButton
+        :disabled="!isValid || loading"
+        icon-only
+        icon="search"
+        color="white"
+        class="p-[10px] shadow-sm rounded-md"
+        @click="loadSummary"
+      />
     </div>
 
     <Listbox v-model="selectedTime">
@@ -279,8 +307,11 @@ import {
 import { CheckIcon, SelectorIcon } from "@heroicons/vue/solid";
 import { VueScrollPicker } from "vue-scroll-picker";
 import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
 import API from "../api";
 import mixin from "../mixin";
+
+dayjs.extend(utc);
 
 export default {
   name: "Stats",
@@ -301,21 +332,22 @@ export default {
   data() {
     return {
       summary: [],
+      totalSpent: 0,
       timeOption: [
         { name: "This Month", start: dayjs().startOf("month"), end: dayjs() },
         { name: "This Week", start: dayjs().startOf("week"), end: dayjs() },
         {
           name: "Last 7 Days",
-          start: dayjs().subtract(7, "day"),
+          start: dayjs().subtract(7, "day").startOf("day"),
           end: dayjs(),
         },
         {
           name: "Last 30 Days",
-          start: dayjs().subtract(30, "day"),
+          start: dayjs().subtract(30, "day").startOf("day"),
           end: dayjs(),
         },
-        { name: "Today", start: dayjs(), end: dayjs() },
-        { name: "Custom", start: dayjs(), end: dayjs() },
+        { name: "Today", start: dayjs().startOf("day"), end: dayjs() },
+        { name: "Custom", start: dayjs().startOf("day"), end: dayjs() },
       ],
       selectedTime: null,
       filter: {
@@ -329,6 +361,7 @@ export default {
       customStartDate: "",
       customEndDate: "",
       loading: false,
+      isValid: true,
     };
   },
   computed: {
@@ -338,22 +371,25 @@ export default {
   },
   methods: {
     async loadSummary() {
-      const start = this.selectedTime.start.unix();
-      const end = this.selectedTime.end.unix();
+      if (this.isValid) {
+        const start = this.selectedTime.start.unix();
+        const end = this.selectedTime.end.unix();
 
-      console.log("start  >>>", this.selectedTime.start.format("D MMM YYYY"));
-      console.log("end    >>>", this.selectedTime.end.format("D MMM YYYY"));
-
-      try {
-        this.loading = true;
-        const { data } = await API.get(
-          `/records/summary?start=${start}&end=${end}`
-        );
-        this.summary = data.summary.sort((a, b) => b.spent - a.spent);
-      } catch (error) {
-        this.revealError(error);
+        try {
+          this.loading = true;
+          const { data } = await API.get(
+            `/records/summary?start=${start}&end=${end}`
+          );
+          this.summary = data.summary.sort((a, b) => b.spent - a.spent);
+          this.totalSpent = 0;
+          this.summary.forEach((el) => {
+            this.totalSpent += el.spent;
+          });
+        } catch (error) {
+          this.revealError(error);
+        }
+        this.loading = false;
       }
-      this.loading = false;
     },
   },
   watch: {
@@ -375,21 +411,38 @@ export default {
           this.customEndDate = "Today";
         }
 
+        this.isValid = true;
+
         this.loadSummary();
       }
     },
     customStartDate(newVal) {
       if (newVal !== "Today") {
-        this.selectedTime.start = dayjs(newVal);
+        this.selectedTime.start = dayjs(newVal).startOf("day");
       } else {
-        this.selectedTime.start = dayjs();
+        this.selectedTime.start = dayjs().startOf("day");
+      }
+
+      const formattedEndTreshold = this.selectedTime.end.format("YYYY-MM-DD");
+      if (this.selectedTime.start.isAfter(formattedEndTreshold, "day")) {
+        this.isValid = false;
+      } else {
+        this.isValid = true;
       }
     },
     customEndDate(newVal) {
       if (newVal !== "Today") {
-        this.selectedTime.end = dayjs(newVal);
+        this.selectedTime.end = dayjs(newVal).endOf("day");
       } else {
         this.selectedTime.end = dayjs();
+      }
+
+      const formattedStartTreshold =
+        this.selectedTime.start.format("YYYY-MM-DD");
+      if (this.selectedTime.end.isBefore(formattedStartTreshold, "day")) {
+        this.isValid = false;
+      } else {
+        this.isValid = true;
       }
     },
   },

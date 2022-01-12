@@ -100,6 +100,9 @@ export default {
         : this.loadingLabel;
     },
     buttonFlavor() {
+      if (this.disabled) {
+        return "bg-neutral-300/20 text-dark-100";
+      }
       if (this.flavor === "warning") {
         return "bg-warning-300";
       }
