@@ -44,6 +44,41 @@
       <h2 class="mb-4 font-bold text-lg">Statistics</h2>
     </section>
 
+    <section class="px-4 mb-8" v-if="loading || summary.length">
+      <PieChart
+        v-if="!loading"
+        :data="summary"
+        @segmentClick="handleSegmentClick"
+      />
+      <div class="pt-[9.5px] pb-[10px]" v-else>
+        <div
+          class="
+            w-[268px]
+            h-[268px]
+            rounded-full
+            bg-neutral-300
+            animate-pulse
+            mx-auto
+            relative
+          "
+        >
+          <div
+            class="
+              absolute
+              top-1/2
+              left-1/2
+              transform
+              -translate-y-1/2 -translate-x-1/2
+              w-[180px]
+              h-[180px]
+              rounded-full
+              bg-dark-300
+            "
+          ></div>
+        </div>
+      </div>
+    </section>
+
     <section class="px-4 shadow-md">
       <div class="w-full py-4 bg-dark-100 rounded-lg">
         <div class="flex justify-between items-center mb-4 px-4">
@@ -297,6 +332,7 @@
 import BaseButton from "../components/BaseButton.vue";
 import BaseIcon from "../components/BaseIcon.vue";
 import BaseModal from "../components/BaseModal.vue";
+import PieChart from "../components/PieChart.vue";
 import {
   Listbox,
   ListboxLabel,
@@ -307,11 +343,8 @@ import {
 import { CheckIcon, SelectorIcon } from "@heroicons/vue/solid";
 import { VueScrollPicker } from "vue-scroll-picker";
 import dayjs from "dayjs";
-import utc from "dayjs/plugin/utc";
 import API from "../api";
 import mixin from "../mixin";
-
-dayjs.extend(utc);
 
 export default {
   name: "Stats",
@@ -326,6 +359,7 @@ export default {
     ListboxButton,
     ListboxOptions,
     ListboxOption,
+    PieChart,
     SelectorIcon,
     VueScrollPicker,
   },
@@ -366,6 +400,9 @@ export default {
     },
   },
   methods: {
+    handleSegmentClick($event) {
+      console.log("🔺", $event);
+    },
     async loadSummary() {
       if (this.isValid) {
         const start = this.selectedTime.start.unix();
