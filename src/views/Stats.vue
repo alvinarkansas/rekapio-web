@@ -210,8 +210,7 @@
         class="
           text-sm
           font-medium
-          px-4
-          py-2
+          p-2
           w-full
           text-center
           bg-dark-300
@@ -230,8 +229,7 @@
         class="
           text-sm
           font-medium
-          px-4
-          py-2
+          p-2
           w-full
           text-center
           bg-dark-300
