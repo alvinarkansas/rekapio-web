@@ -37,6 +37,9 @@ module.exports = {
       boxShadow: {
         "3xl": "0px 4px 40px 8px rgba(0,0,0,0.4)",
       },
+      transitionProperty: {
+        width: "width",
+      },
     },
   },
   plugins: [],
