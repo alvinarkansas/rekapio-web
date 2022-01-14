@@ -39,6 +39,13 @@
     </div>
   </BaseModal>
 
+  <BaseModal v-model="recordAdd">
+    <ModalRecordAdd
+      @close="closeRecordAdd"
+      @closeAndRefetch="closeAndRefetch"
+    />
+  </BaseModal>
+
   <div class="mb-[52px]">
     <section class="px-4 mb-8">
       <h2 class="mb-4 font-bold text-lg">Statistics</h2>
@@ -79,7 +86,7 @@
       </div>
     </section>
 
-    <section class="px-4 shadow-md">
+    <section class="px-4 shadow-md mb-4">
       <div class="w-full py-4 bg-dark-100 rounded-lg">
         <div class="flex justify-between items-center mb-4 px-4">
           <h2 class="font-bold text-lg">By Category</h2>
@@ -153,6 +160,78 @@
             <div class="h-4 w-16 bg-neutral-300 rounded-md animate-pulse" />
           </div>
         </template>
+      </div>
+    </section>
+
+    <section class="px-4 shadow-md">
+      <div class="w-full py-4 bg-dark-100 rounded-lg px-4">
+        <h2 class="font-bold text-lg mb-4">Cash Flow</h2>
+
+        <p class="text-2xl font-bold mb-4">{{ toRupiah(cashFlow.total) }}</p>
+
+        <div class="mb-4">
+          <div class="flex justify-between text-sm mb-2">
+            <p class="font-semibold">Income</p>
+            <p>{{ toRupiah(cashFlow.income) }}</p>
+          </div>
+
+          <div class="rounded-full bg-dark-300 h-[9px] w-full relative">
+            <div>
+              <div
+                class="
+                  rounded-full
+                  bg-emerald-500
+                  h-[9px]
+                  transition-width
+                  delay-75
+                  duration-500
+                "
+                :class="{
+                  'w-full': cashFlow.income > Math.abs(cashFlow.expense),
+                  'w-0': cashFlow.income === 0 && cashFlow.expense === 0,
+                }"
+                :style="{
+                  width:
+                    cashFlow.income < Math.abs(cashFlow.expense)
+                      ? cashFlowPercentage
+                      : null,
+                }"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="flex justify-between text-sm mb-2">
+            <p class="font-semibold">Expense</p>
+            <p>{{ toRupiah(cashFlow.expense) }}</p>
+          </div>
+
+          <div class="rounded-full bg-dark-300 h-[9px] w-full relative">
+            <div>
+              <div
+                class="
+                  rounded-full
+                  bg-error-300
+                  h-[9px]
+                  transition-width
+                  delay-75
+                  duration-500
+                "
+                :class="{
+                  'w-full': cashFlow.income < Math.abs(cashFlow.expense),
+                  'w-0': cashFlow.income === 0 && cashFlow.expense === 0,
+                }"
+                :style="{
+                  width:
+                    cashFlow.income > Math.abs(cashFlow.expense)
+                      ? cashFlowPercentage
+                      : null,
+                }"
+              ></div>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   </div>
@@ -246,7 +325,7 @@
         icon="search"
         color="white"
         class="p-[10px] shadow-sm rounded-md"
-        @click="loadSummary"
+        @click="loadStatistics"
       />
     </div>
 
@@ -330,6 +409,7 @@
 import BaseButton from "../components/BaseButton.vue";
 import BaseIcon from "../components/BaseIcon.vue";
 import BaseModal from "../components/BaseModal.vue";
+import ModalRecordAdd from "../components/ModalRecordAdd.vue";
 import PieChart from "../components/PieChart.vue";
 import {
   Listbox,
@@ -352,6 +432,7 @@ export default {
     BaseIcon,
     BaseModal,
     CheckIcon,
+    ModalRecordAdd,
     Listbox,
     ListboxLabel,
     ListboxButton,
@@ -390,11 +471,37 @@ export default {
       customEndDate: "",
       loading: false,
       isValid: true,
+      cashFlow: {
+        total: 0,
+        income: 0,
+        expense: 0,
+      },
     };
   },
   computed: {
     days() {
       return this.getDates(new Date("2021-01-01T17:00:00.000Z"), new Date());
+    },
+    cashFlowPercentage() {
+      const currentMax = Math.max(
+        this.cashFlow.income,
+        Math.abs(this.cashFlow.expense)
+      );
+
+      let proportion = 0;
+      if (currentMax === this.cashFlow.income) {
+        proportion = Math.abs(this.cashFlow.expense) / this.cashFlow.income;
+      } else {
+        proportion = this.cashFlow.income / Math.abs(this.cashFlow.expense);
+      }
+
+      return (proportion * 100).toFixed(2) + "%";
+    },
+    recordAdd() {
+      return this.$store.state.modal.recordAdd;
+    },
+    accounts() {
+      return this.$store.state.accounts;
     },
   },
   methods: {
@@ -422,6 +529,42 @@ export default {
         this.loading = false;
       }
     },
+    async loadCashFlow() {
+      if (this.isValid) {
+        const start = this.selectedTime.start.unix();
+        const end = this.selectedTime.end.unix();
+
+        try {
+          const { data } = await API.get(
+            `/records/cash_flow?start=${start}&end=${end}`
+          );
+
+          this.cashFlow.income = data.income;
+          this.cashFlow.expense = data.expense;
+          this.cashFlow.total = data.income + data.expense;
+        } catch (error) {
+          this.revealError(error);
+        }
+      }
+    },
+    async loadStatistics() {
+      this.loadSummary();
+      this.loadCashFlow();
+    },
+    closeRecordAdd() {
+      this.$store.commit("SET_MODAL", { type: "recordAdd", payload: false });
+    },
+    async closeAndRefetch() {
+      this.closeRecordAdd();
+      this.$store.commit("SET_LOADING", { type: "accounts", payload: true });
+      this.$store.commit("SET_LOADING", {
+        type: "recentRecords",
+        payload: true,
+      });
+      await this.loadStatistics();
+      await this.$store.dispatch("loadAccounts");
+      await this.$store.dispatch("loadRecentRecords");
+    },
   },
   watch: {
     selectedTime(newVal) {
@@ -445,6 +588,7 @@ export default {
         this.isValid = true;
 
         this.loadSummary();
+        this.loadCashFlow();
       }
     },
     customStartDate(newVal) {

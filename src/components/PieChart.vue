@@ -80,9 +80,6 @@ export default {
           color: item.category_color,
           name: item.category_name,
         };
-        console.log(dataObject.name);
-        console.log("start   :", dataObject.offset);
-        console.log("panjang :", dataObject.relativeSize);
         startingPoint += relativeSize;
         return dataObject;
       });
