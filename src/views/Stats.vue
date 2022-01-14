@@ -39,6 +39,13 @@
     </div>
   </BaseModal>
 
+  <BaseModal v-model="recordAdd">
+    <ModalRecordAdd
+      @close="closeRecordAdd"
+      @closeAndRefetch="closeAndRefetch"
+    />
+  </BaseModal>
+
   <div class="mb-[52px]">
     <section class="px-4 mb-8">
       <h2 class="mb-4 font-bold text-lg">Statistics</h2>
@@ -402,6 +409,7 @@
 import BaseButton from "../components/BaseButton.vue";
 import BaseIcon from "../components/BaseIcon.vue";
 import BaseModal from "../components/BaseModal.vue";
+import ModalRecordAdd from "../components/ModalRecordAdd.vue";
 import PieChart from "../components/PieChart.vue";
 import {
   Listbox,
@@ -424,6 +432,7 @@ export default {
     BaseIcon,
     BaseModal,
     CheckIcon,
+    ModalRecordAdd,
     Listbox,
     ListboxLabel,
     ListboxButton,
@@ -488,6 +497,12 @@ export default {
 
       return (proportion * 100).toFixed(2) + "%";
     },
+    recordAdd() {
+      return this.$store.state.modal.recordAdd;
+    },
+    accounts() {
+      return this.$store.state.accounts;
+    },
   },
   methods: {
     handleSegmentClick($event) {
@@ -524,8 +539,6 @@ export default {
             `/records/cash_flow?start=${start}&end=${end}`
           );
 
-          console.log("response", data);
-
           this.cashFlow.income = data.income;
           this.cashFlow.expense = data.expense;
           this.cashFlow.total = data.income + data.expense;
@@ -537,6 +550,20 @@ export default {
     async loadStatistics() {
       this.loadSummary();
       this.loadCashFlow();
+    },
+    closeRecordAdd() {
+      this.$store.commit("SET_MODAL", { type: "recordAdd", payload: false });
+    },
+    async closeAndRefetch() {
+      this.closeRecordAdd();
+      this.$store.commit("SET_LOADING", { type: "accounts", payload: true });
+      this.$store.commit("SET_LOADING", {
+        type: "recentRecords",
+        payload: true,
+      });
+      await this.loadStatistics();
+      await this.$store.dispatch("loadAccounts");
+      await this.$store.dispatch("loadRecentRecords");
     },
   },
   watch: {

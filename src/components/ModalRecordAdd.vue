@@ -9,7 +9,7 @@
 
     <form
       class="overflow-y-auto py-4 flex flex-col gap-4"
-      style="max-height: calc(85vh - 56px)"
+      style="max-height: calc(95vh - 56px)"
       @submit.prevent="handleSubmit"
     >
       <div class="flex px-4 w-full">

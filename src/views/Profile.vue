@@ -11,6 +11,13 @@
     <ModalIcon @close="closeIconModal" @setIcon="setIcon" />
   </BaseModal>
 
+  <BaseModal v-model="recordAdd">
+    <ModalRecordAdd
+      @close="closeRecordAdd"
+      @closeAndRefetch="closeAndRefetch"
+    />
+  </BaseModal>
+
   <section class="px-4">
     <h2 class="mb-4 font-bold text-lg">Hello!</h2>
 
@@ -51,6 +58,7 @@ import BaseModal from "../components/BaseModal.vue";
 import ModalCategory from "../components/ModalCategory.vue";
 import ModalCategoryEdit from "../components/ModalCategoryEdit.vue";
 import ModalIcon from "../components/ModalIcon.vue";
+import ModalRecordAdd from "../components/ModalRecordAdd.vue";
 import { ChevronRightIcon } from "@heroicons/vue/solid";
 
 export default {
@@ -61,13 +69,14 @@ export default {
     ModalCategory,
     ModalCategoryEdit,
     ModalIcon,
+    ModalRecordAdd,
     ChevronRightIcon,
   },
   mixins: [mixin],
   data() {
     return {
       loading: false,
-    }
+    };
   },
   computed: {
     modal() {
@@ -75,6 +84,12 @@ export default {
     },
     categoryEditForm() {
       return this.$store.state.categoryEditForm;
+    },
+    recordAdd() {
+      return this.$store.state.modal.recordAdd;
+    },
+    accounts() {
+      return this.$store.state.accounts;
     },
   },
   methods: {
@@ -104,8 +119,24 @@ export default {
       this.$store.commit("SET_MODAL", { type: "icon", payload: false });
     },
     setIcon(icon) {
-      this.$store.commit("SET_CATEGORY_EDIT_FORM", { ...this.categoryEditForm, icon });
+      this.$store.commit("SET_CATEGORY_EDIT_FORM", {
+        ...this.categoryEditForm,
+        icon,
+      });
       this.closeIconModal();
+    },
+    closeRecordAdd() {
+      this.$store.commit("SET_MODAL", { type: "recordAdd", payload: false });
+    },
+    async closeAndRefetch() {
+      this.closeRecordAdd();
+      this.$store.commit("SET_LOADING", { type: "accounts", payload: true });
+      this.$store.commit("SET_LOADING", {
+        type: "recentRecords",
+        payload: true,
+      });
+      await this.$store.dispatch("loadAccounts");
+      await this.$store.dispatch("loadRecentRecords");
     },
   },
 };
