@@ -172,7 +172,7 @@
             <div class="flex gap-2 items-center justify-center">
               <div
                 class="h-10 w-10 grid place-items-center rounded-full"
-                :style="{ background: form.category.color || '#634D8D' }"
+                :style="{ background: form.category.color || '' }"
               >
                 <BaseIcon :name="form.category.icon || 'folder'" />
               </div>
@@ -258,9 +258,9 @@
               <span v-if="!form.destinationAccount.name" class="text-error-200">
                 Required
               </span>
-              <span v-else class="uppercase">{{
-                form.destinationAccount.name
-              }}</span>
+              <span v-else class="uppercase">
+                {{ form.destinationAccount.name }}
+              </span>
               <ChevronUpIcon v-if="expand.destinationAccount" class="h-5 w-5" />
               <ChevronDownIcon v-else class="h-5 w-5 text-neutral-300" />
             </div>
@@ -463,7 +463,8 @@ export default {
   },
   methods: {
     async handleSubmit() {
-      const { type, note, account, category, amount, destinationAccount } = this.form;
+      const { type, note, account, category, amount, destinationAccount } =
+        this.form;
 
       let time = "";
       if (this.form.day === "Today") {
