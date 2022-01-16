@@ -36,6 +36,14 @@
       </button>
     </div>
 
+    <BaseButton
+      flavor="warning"
+      label="Install Rekapio"
+      class="w-full py-3 mb-2"
+      size="md"
+      @click="install"
+    />
+
     <div class="w-full">
       <BaseButton
         loading-label="Wait a sec"
@@ -76,6 +84,7 @@ export default {
   data() {
     return {
       loading: false,
+      deferredPrompt: null,
     };
   },
   computed: {
@@ -138,6 +147,22 @@ export default {
       await this.$store.dispatch("loadAccounts");
       await this.$store.dispatch("loadRecentRecords");
     },
+    async install() {
+      console.log("prompted");
+      try {
+        this.deferredPrompt.prompt();
+      } catch (error) {
+        this.revealError(error);
+      }
+    },
+  },
+  created() {
+    console.log("add event listener profile");
+    window.addEventListener("beforeinstallprompt", (e) => {
+      e.preventDefault();
+      console.log("beforeinstallprompt", e);
+      this.deferredPrompt = e;
+    });
   },
 };
 </script>
