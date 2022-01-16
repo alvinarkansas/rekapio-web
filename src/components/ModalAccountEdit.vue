@@ -1,4 +1,36 @@
 <template>
+  <BaseModal v-model="confirmation" permanent>
+    <div class="bg-dark-300 text-neutral-100 rounded-t-3xl">
+      <header class="bg-dark-100 p-4 relative rounded-t-3xl">
+        <h1 class="font-bold text-center">Delete Confirmation</h1>
+      </header>
+
+      <section class="pt-4 pb-6">
+        <p class="text-center mb-4">
+          You cannot undo this action. Are you sure you want to delete this
+          account?
+        </p>
+        <div class="flex gap-4 px-4">
+          <BaseButton
+            label="Cancel"
+            class="w-full"
+            size="md"
+            @click="confirmation = false"
+          />
+          <BaseButton
+            flavor="danger"
+            label="Delete"
+            loading-label="Deleting"
+            class="w-full"
+            size="md"
+            :loading="loading.delete"
+            @click="deleteAccount"
+          />
+        </div>
+      </section>
+    </div>
+  </BaseModal>
+
   <div class="bg-dark-300 text-neutral-100 rounded-t-3xl">
     <header class="bg-dark-100 p-4 relative rounded-t-3xl">
       <button @click="$emit('close')" class="text-error-200 absolute">
@@ -125,7 +157,7 @@
           class="w-full mb-4"
           loading-label="Deleting"
           :loading="loading.delete"
-          @click="deleteAccount"
+          @click="confirmation = true"
         />
         <BaseButton
           label="Save"
@@ -145,6 +177,7 @@ import mixin from "../mixin";
 import BaseButton from "./BaseButton.vue";
 import BaseIcon from "./BaseIcon.vue";
 import BaseInput from "./BaseInput.vue";
+import BaseModal from "./BaseModal.vue";
 import CurrencyInput from "./CurrencyInput.vue";
 import { ChevronUpIcon, ChevronDownIcon } from "@heroicons/vue/solid";
 import { COLORS } from "../constants";
@@ -157,6 +190,7 @@ export default {
     BaseButton,
     BaseIcon,
     BaseInput,
+    BaseModal,
     ChevronUpIcon,
     ChevronDownIcon,
     CurrencyInput,
@@ -176,6 +210,7 @@ export default {
         delete: false,
         edit: false,
       },
+      confirmation: false,
     };
   },
   computed: {

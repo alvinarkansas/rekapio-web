@@ -93,10 +93,10 @@ export default {
     },
   },
   methods: {
-    async logout() {
+    logout() {
       try {
         this.loading = true;
-        await API.post("/users/revoke_refresh_token");
+        API.post("/users/revoke_refresh_token");
         this.$store.commit("SET_TOKEN", "");
         this.$store.commit("SET_AUTHENTICATED", false);
         this.$store.commit("SET_ACCOUNTS", []);
