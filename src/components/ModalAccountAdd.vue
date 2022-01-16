@@ -62,7 +62,7 @@
         <div>
           <div class="flex justify-between px-4 py-3 relative z-10 bg-dark-100">
             <div class="flex gap-2 items-center justify-center">
-              <div class="p-2">
+              <div class="h-10 w-10 grid place-items-center rounded-full">
                 <BaseIcon name="palette" />
               </div>
               <span>Color</span>
@@ -71,7 +71,9 @@
               class="flex gap-2 items-center justify-center"
               @click="expand.color = !expand.color"
             >
+              <span v-if="!form.color" class="text-error-200">Required</span>
               <span
+                v-else
                 class="h-3 w-5 rounded-full"
                 :style="{ background: form.color }"
               />
@@ -125,6 +127,7 @@
           class="w-full"
           loading-label="Adding account"
           :loading="loading"
+          :disabled="!formIsValid"
         />
       </div>
     </form>
@@ -139,9 +142,11 @@ import CurrencyInput from "./CurrencyInput.vue";
 import { ChevronUpIcon, ChevronDownIcon } from "@heroicons/vue/solid";
 import { COLORS } from "../constants";
 import API from "../api";
+import mixin from "../mixin";
 
 export default {
   name: "ModalAccountAdd",
+  mixins: [mixin],
   emits: ["closeAndRefetch", "close"],
   components: {
     BaseButton,
@@ -158,6 +163,7 @@ export default {
         currentBalance: 0,
         color: "",
       },
+      formIsValid: false,
       expand: {
         color: false,
       },
@@ -177,9 +183,25 @@ export default {
         color: this.form.color,
       };
       this.loading = true;
-      await API.post("/accounts", payload);
+      try {
+        await API.post("/accounts", payload);
+        this.$emit("closeAndRefetch");
+      } catch (error) {
+        this.revealError(error);
+      }
       this.loading = false;
-      this.$emit("closeAndRefetch");
+    },
+  },
+  watch: {
+    form: {
+      deep: true,
+      handler(newVal) {
+        if (newVal.name && newVal.color) {
+          this.formIsValid = true;
+        } else {
+          this.formIsValid = false;
+        }
+      },
     },
   },
 };
