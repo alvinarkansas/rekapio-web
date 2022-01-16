@@ -109,7 +109,10 @@
               class="flex gap-2 items-center justify-center"
               @click="toggleAccordion('account')"
             >
-              <span class="uppercase">{{ form.account.name }}</span>
+              <span v-if="!form.account.name" class="text-error-200">
+                Required
+              </span>
+              <span v-else class="uppercase">{{ form.account.name }}</span>
               <ChevronUpIcon v-if="expand.account" class="h-5 w-5" />
               <ChevronDownIcon v-else class="h-5 w-5 text-neutral-300" />
             </div>
@@ -169,9 +172,9 @@
             <div class="flex gap-2 items-center justify-center">
               <div
                 class="h-10 w-10 grid place-items-center rounded-full"
-                :style="{ background: form.category.color }"
+                :style="{ background: form.category.color || '#634D8D' }"
               >
-                <BaseIcon :name="form.category.icon" />
+                <BaseIcon :name="form.category.icon || 'folder'" />
               </div>
               <span>Category</span>
             </div>
@@ -179,12 +182,10 @@
               class="flex gap-2 items-center justify-center"
               @click="toggleAccordion('category')"
             >
-              <input
-                class="bg-transparent focus:outline-none text-right w-full"
-                type="hidden"
-                placeholder="Select category"
-              />
-              <span>{{ form.category.name }}</span>
+              <span v-if="!form.category.name" class="text-error-200">
+                Required
+              </span>
+              <span v-else>{{ form.category.name }}</span>
 
               <ChevronUpIcon v-if="expand.category" class="h-5 w-5" />
               <ChevronDownIcon v-else class="h-5 w-5 text-neutral-300" />
@@ -254,7 +255,12 @@
               class="flex gap-2 items-center justify-center"
               @click="toggleAccordion('destinationAccount')"
             >
-              <span class="uppercase">{{ form.destinationAccount.name }}</span>
+              <span v-if="!form.destinationAccount.name" class="text-error-200">
+                Required
+              </span>
+              <span v-else class="uppercase">{{
+                form.destinationAccount.name
+              }}</span>
               <ChevronUpIcon v-if="expand.destinationAccount" class="h-5 w-5" />
               <ChevronDownIcon v-else class="h-5 w-5 text-neutral-300" />
             </div>
@@ -375,6 +381,7 @@
           class="w-full"
           loading-label="Adding record"
           :loading="loading"
+          :disabled="!formIsValid"
         />
       </div>
     </form>
@@ -420,6 +427,7 @@ export default {
         minute: dayjs().format("mm"),
         note: "",
       },
+      formIsValid: false,
       expand: {
         account: false,
         category: false,
@@ -494,9 +502,25 @@ export default {
       }
     },
   },
-  mounted() {
-    const { name, id, color, icon } = this.visibleCategories[0];
-    this.form.category = { name, id, color, icon };
+  watch: {
+    form: {
+      deep: true,
+      handler(newVal) {
+        if (this.form.type !== "transfer") {
+          if (newVal.account.id && newVal.category.id) {
+            this.formIsValid = true;
+          } else {
+            this.formIsValid = false;
+          }
+        } else {
+          if (newVal.account.id && newVal.destinationAccount.id) {
+            this.formIsValid = true;
+          } else {
+            this.formIsValid = false;
+          }
+        }
+      },
+    },
   },
 };
 </script>
