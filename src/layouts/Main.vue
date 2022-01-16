@@ -38,11 +38,14 @@ export default {
   },
   created() {
     setTimeout(() => {
+      console.log("add event listener");
       window.addEventListener("beforeinstallprompt", (e) => {
         e.preventDefault();
+        console.log("beforeinstallprompt", e);
         this.deferredPrompt = e;
       });
       window.addEventListener("appinstalled", () => {
+        console.log("appinstalled");
         this.deferredPrompt = null;
       });
     }, 3000);
