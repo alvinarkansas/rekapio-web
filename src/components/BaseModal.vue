@@ -2,7 +2,7 @@
   <transition name="fade" appear>
     <div
       v-if="modelValue"
-      class="w-screen h-screen bg-black bg-opacity-75 fixed inset-0 z-50"
+      class="w-screen lg:w-[540px] h-screen mx-auto bg-black bg-opacity-75 fixed inset-0 z-50"
       @click="overlayClick"
     />
   </transition>
@@ -11,6 +11,8 @@
       v-if="modelValue"
       class="
         fixed
+        lg:w-[540px]
+        mx-auto
         modal-style
         rounded-t-2xl
         shadow-custom

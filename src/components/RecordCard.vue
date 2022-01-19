@@ -1,5 +1,5 @@
 <template>
-  <div class="flex justify-between" :class="classes">
+  <div class="flex justify-between sm:cursor-pointer" :class="classes">
     <div class="flex gap-2">
       <div
         class="

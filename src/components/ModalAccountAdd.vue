@@ -68,7 +68,7 @@
               <span>Color</span>
             </div>
             <div
-              class="flex gap-2 items-center justify-center"
+              class="flex gap-2 items-center justify-center sm:cursor-pointer"
               @click="expand.color = !expand.color"
             >
               <span v-if="!form.color" class="text-error-200">Required</span>
@@ -101,7 +101,7 @@
                 v-for="(color, index) in colors"
                 :key="index"
                 @click="form.color = color"
-                class="flex-shrink-0 w-12 h-12 rounded-full"
+                class="flex-shrink-0 w-12 h-12 rounded-full sm:cursor-pointer"
                 :class="[
                   index === 0
                     ? 'ml-4'
