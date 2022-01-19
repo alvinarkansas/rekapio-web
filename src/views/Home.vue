@@ -36,7 +36,7 @@
         <div
           v-for="account in accounts"
           :key="account.id"
-          class="rounded-lg bg-dark-100 p-3 pb-2"
+          class="rounded-lg bg-dark-100 p-3 pb-2 sm:cursor-pointer"
           @click="openAccountDetail(account.id)"
         >
           <div class="flex gap-2 items-center">

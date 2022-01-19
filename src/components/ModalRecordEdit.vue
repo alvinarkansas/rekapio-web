@@ -55,7 +55,7 @@
               px-2
               py-1
             "
-            :class="form.type === 'expense' ? 'bg-shades-400' : ''"
+            :class="form.type === 'expense' ? 'bg-shades-400' : 'sm:cursor-pointer'"
           >
             <input
               v-model="form.type"
@@ -77,7 +77,7 @@
               px-2
               py-1
             "
-            :class="form.type === 'income' ? 'bg-shades-400' : ''"
+            :class="form.type === 'income' ? 'bg-shades-400' : 'sm:cursor-pointer'"
           >
             <input
               v-model="form.type"
@@ -99,7 +99,7 @@
               px-2
               py-1
             "
-            :class="form.type === 'transfer' ? 'bg-shades-400' : ''"
+            :class="form.type === 'transfer' ? 'bg-shades-400' : 'sm:cursor-pointer'"
           >
             <input
               v-model="form.type"
@@ -137,7 +137,7 @@
               <span>Account</span>
             </div>
             <div
-              class="flex gap-2 items-center justify-center"
+              class="flex gap-2 items-center justify-center sm:cursor-pointer"
               @click="toggleAccordion('account')"
             >
               <span class="uppercase">{{ form.account.name }}</span>
@@ -164,7 +164,7 @@
               <span
                 v-for="(account, index) in accounts"
                 :key="account.id"
-                class="py-2 px-4 rounded-lg flex-shrink-0 font-medium uppercase"
+                class="py-2 px-4 rounded-lg flex-shrink-0 font-medium uppercase sm:cursor-pointer"
                 :class="[
                   index === 0
                     ? 'ml-4'
@@ -207,7 +207,7 @@
               <span>Category</span>
             </div>
             <div
-              class="flex gap-2 items-center justify-center"
+              class="flex gap-2 items-center justify-center sm:cursor-pointer"
               @click="toggleAccordion('category')"
             >
               <span v-if="!form.category.name" class="text-error-200">
@@ -254,6 +254,7 @@
                   rounded-lg
                   py-2
                   px-4
+                  sm:cursor-pointer
                 "
                 :class="[
                   index === 0
@@ -280,7 +281,7 @@
               <span>To Account</span>
             </div>
             <div
-              class="flex gap-2 items-center justify-center"
+              class="flex gap-2 items-center justify-center sm:cursor-pointer"
               @click="toggleAccordion('destinationAccount')"
             >
               <span v-if="!form.destinationAccount.name" class="text-error-200">
@@ -305,6 +306,7 @@
                 z-0
                 bg-dark-100
                 no-scrollbar
+                sm:cursor-pointer
               "
             >
               <span
@@ -354,7 +356,7 @@
               <span>Time</span>
             </div>
             <div
-              class="flex gap-2 items-center"
+              class="flex gap-2 items-center sm:cursor-pointer"
               @click="toggleAccordion('time')"
             >
               <span>{{ time }}</span>

@@ -1,6 +1,6 @@
 <template>
   <nav
-    className="fixed bottom-0 w-screen flex justify-between text-neutral-300 px-4 py-2 text-xs font-medium bg-dark-100"
+    className="fixed bottom-0 w-screen flex justify-between text-neutral-300 px-4 py-2 text-xs font-medium bg-dark-100 lg:w-[540px]"
   >
     <BaseNavItem to="/app/home" label="Home" icon="home" />
     <BaseNavItem to="/app/stats" label="Stats" icon="chart-pie-alt" />

@@ -240,6 +240,8 @@
     v-if="!isValid"
     class="
       fixed
+      lg:w-[524px]
+      mx-auto
       bottom-32
       inset-x-4
       rounded-md
@@ -255,6 +257,8 @@
   <section
     class="
       fixed
+      lg:w-[540px]
+      mx-auto
       bottom-14
       inset-x-0
       bg-dark-100
